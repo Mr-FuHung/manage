@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 // createWebHashHistory  以#的路由
 import Home from './../views/Home.vue'
-import Login from './../views/Login.vue'
 
 const routes = [
     {
@@ -12,7 +11,7 @@ const routes = [
             title: '首页'
         },
         // children: [
-          
+
         // ]
     },
     {
@@ -21,13 +20,13 @@ const routes = [
         meta: {
             title: '登录页'
         },
-        component: Login,
+        component: () => import('./../views/Login.vue'),
     },
-    {
-        name: '404',
-        path: '/:pathMatch(.*)',
-        redirect: '/',
-    }
+    // {
+    //     name: '404',
+    //     path: '/:pathMatch(.*)',
+    //     redirect: '/',
+    // }
 ]
 const router = createRouter({
     history: createWebHashHistory(),
