@@ -22,6 +22,7 @@ instance.interceptors.request.use(request => {
     return request;
 }, error => {
     // 对请求错误做些什么
+    ElMessage.error(error || NETWORK_ERROR);
     return Promise.reject(error);
 });
 
@@ -29,9 +30,9 @@ instance.interceptors.request.use(request => {
 instance.interceptors.response.use(response => {
     const { code, data, msg } = response.data;
     // 对响应数据做点什么
-    if (code === 0) {
+    if (code === 200) {
         return data;
-    } else if (code === 9999) {
+    } else if (code === 40001) {
         ElMessage.error(msg);
         router.push({ name: 'login' })
         return Promise.reject(msg);
@@ -51,6 +52,9 @@ function ajax(options) {
     if (options.method.toLowerCase() === 'get') {
         options.params = options.data;//get请求传参改为统一的data
     }
+    if (typeof options.mock !== 'undefined') {
+        config.mock = options.mock;
+    }
     if (config.env === 'prod') {
         instance.defaults.baseURL = config.baseApi;//为生产环境时，强制切换为baseApi，以防万一
     } else {
@@ -66,8 +70,4 @@ function ajax(options) {
         })
     }
 })
-export default {
-    install: (app, name) => {
-        app.config.globalProperties[name] = ajax;
-    }
-}
+export default ajax;

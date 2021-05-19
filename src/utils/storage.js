@@ -30,8 +30,4 @@ function storage() {
     }
 }
 
-export default {
-    install: (app, name) => {
-        app.config.globalProperties[name] = storage();
-    }
-}
+export default storage();

@@ -7,7 +7,11 @@ export default defineConfig({
     host:'localhost',
     port: 8080,//端口
     open:true,//自动打开
-    // proxy:{}//代理
+    proxy:{//代理
+      "/v1":{
+        target:'http://localhost:3000'
+      }
+    }
   },
   plugins: [vue()]
 })

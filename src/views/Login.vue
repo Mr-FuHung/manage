@@ -1,16 +1,30 @@
 <template>
   <div class="login_wrapper">
     <div class="modal">
-      <el-form>
+      <el-form ref="userForm" :rules="rules" :model="user" status-icon>
         <div class="title">地球</div>
-        <el-form-item>
-          <el-input type="text"  prefix-icon="el-icon-user" placeholder="账号" v-model.trim="assgin" clearable/>
+        <el-form-item prop="userName">
+          <el-input
+            type="text"
+            prefix-icon="el-icon-user"
+            placeholder="账号"
+            v-model.trim="user.userName"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item prop="userPwd">
+          <el-input
+            type="password"
+            prefix-icon="el-icon-lock"
+            placeholder="密码"
+            v-model.trim="user.userPwd"
+            show-password
+          />
         </el-form-item>
         <el-form-item>
-          <el-input type="password"  prefix-icon="el-icon-lock" placeholder="密码" v-model.trim="psw" show-password />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" class="login_btn">登录</el-button>
+          <el-button type="primary" class="login_btn" @click="login"
+            >登录</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -21,11 +35,55 @@
 export default {
   data() {
     return {
-      assgin: "",
-      psw: "",
+      user: {
+        userName: "",
+        userPwd: "",
+      },
+      rules: {
+        userName: [
+          {
+            required: true,
+            message: "请输入用户名",
+            trigger: ["blur", "change"],
+          },
+          {
+            min: 5,
+            max: 11,
+            message: "长度在 5 到 11 个字符",
+            trigger: "blur",
+          },
+        ],
+        userPwd: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: ["blur", "change"],
+          },
+        ],
+      },
     };
   },
-  mounted() {},
+  methods: {
+    login() {
+      this.$refs.userForm.validate((valid) => { //验证表单是否rules符合验证规则
+
+        if (valid) {
+
+          this.$ajax({
+            url: "/users/login",
+            method: "post",
+            // mock: true,
+            data: this.user,
+          }).then((result) => {
+            this.$store.commit('saveUserInfo',result)
+            this.$router.push('/');
+          });
+
+        }
+
+      });
+    },
+  },
 };
 </script>
 
@@ -51,7 +109,7 @@ export default {
     }
     .login_btn {
       width: 100%;
-      font-size: .2rem;
+      font-size: 0.2rem;
     }
   }
 }
