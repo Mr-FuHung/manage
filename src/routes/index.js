@@ -7,12 +7,20 @@ const routes = [
         name: 'home',
         path: '/',
         component: Home,
+        redirect:'/welcome',
         meta: {
             title: '首页'
         },
-        // children: [
-
-        // ]
+        children: [
+            {
+                name: 'welcome',
+                path: '/welcome',
+                meta: {
+                    title: '欢迎页'
+                },
+                component: () => import('./../views/Welcome.vue'),
+            },
+        ]
     },
     {
         name: 'login',

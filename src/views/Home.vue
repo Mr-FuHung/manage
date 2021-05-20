@@ -1,10 +1,50 @@
 <template>
   <el-container class="container">
-    <el-aside width="2rem">Aside</el-aside>
+    <el-aside :width="isCollapse ? '.64rem' : '2rem'">
+      <!-- logo -->
+      <div class="logo">
+        <img src="./../assets/logo.png" alt="" />
+        <div class="Manage">Manage</div>
+      </div>
+      <!-- 导航菜单 -->
+      <el-menu
+        default-active="1"
+        class="nav-menu"
+        router
+        background-color="#001529"
+        text-color="#fff"
+        :collapse="isCollapse"
+      >
+        <el-submenu index="1">
+          <template #title>
+            <i class="el-icon-setting"></i>
+            <span>系统管理</span>
+          </template>
+          <el-menu-item index="1-1">用户管理</el-menu-item>
+          <el-menu-item index="1-2">菜单管理</el-menu-item>
+        </el-submenu>
+        <el-submenu index="2">
+          <template #title>
+            <i class="el-icon-setting"></i>
+            <span>审批管理</span>
+          </template>
+          <el-menu-item index="2-1">休假申请</el-menu-item>
+          <el-menu-item index="2-2">休假审批</el-menu-item>
+        </el-submenu>
+      </el-menu>
+    </el-aside>
     <el-container>
+      <!-- header -->
       <el-header>
-        <el-row align="middle" type="flex">
-          <el-col :span="20" class="hidden-md-only">
+        <el-row align="middle" type="flex" :gutter="20">
+          <!-- 展开按钮 -->
+          <el-col :span="1" class="hidden-md-only">
+            <div class="menu-fold" @click="toggle">
+              <i class="el-icon-s-fold"></i>
+            </div>
+          </el-col>
+          <!-- 面包屑 -->
+          <el-col :md="{ offset: 1, span: 18 }" class="hidden-md-only">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
               <el-breadcrumb-item>活动管理</el-breadcrumb-item>
@@ -12,21 +52,63 @@
               <el-breadcrumb-item>活动详情</el-breadcrumb-item>
             </el-breadcrumb>
           </el-col>
-          <el-col :md="{ span: 2, push: 2 }" :xs="{ push: 20, span: 4 }">
-            用户
+          <!-- 角色 -->
+          <el-col :md="{ span: 3, offset: 1 }" class="self">
+            <el-badge :is-dot="true" class="notice" type="danger">
+              <i class="el-icon-bell"></i>
+            </el-badge>
+            <!-- 下拉菜单 -->
+            <el-dropdown @command="handleCommand">
+              <span class="user-link">
+                {{ userInfo.userName }}
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="email">
+                    邮箱：{{ userInfo.userEmail }}
+                  </el-dropdown-item>
+                  <el-dropdown-item command="logout">退出</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </el-col>
         </el-row>
       </el-header>
+      <!-- 页面主体 -->
       <el-main>
         <router-view></router-view>
       </el-main>
+      <!-- 页脚 -->
       <el-footer>Footer</el-footer>
     </el-container>
   </el-container>
 </template>
 
-<script setup>
-
+<script >
+export default {
+  name: "Home",
+  data() {
+    return {
+      userInfo: {
+        userName: "admin",
+        userEmail: "1002150110@qq.com",
+      },
+      isCollapse: false,
+    };
+  },
+  methods: {
+    handleCommand(key) {
+      if (key === "logout") {
+        this.$store.commit("saveUserInfo", null);
+        this.userInfo = {};
+        this.$router.push("/login");
+      }
+    },
+    toggle() {
+      this.isCollapse = !this.isCollapse;
+    },
+  },
+};
 </script>
 
 <style lang='scss'>
@@ -41,19 +123,59 @@
 .el-footer {
   // background-color: #2D97CC;
   color: #333;
-  text-align: center;
   line-height: 0.6rem;
 }
 .el-header {
   border-bottom: 1px solid #ccc;
+  .menu-fold {
+    cursor: pointer;
+    font-size: 0.3rem;
+    text-align: left;
+  }
+  .self {
+    text-align: right;
+  }
+  .notice {
+    line-height: 0.2rem;
+    margin-right: 0.1rem;
+  }
+  .user-link {
+    cursor: pointer;
+    color: #409eff;
+  }
+}
+.el-menu-item:focus,
+.el-menu-item:hover,
+.el-submenu__title:hover {
+  outline: none;
+  background-color: #ecf5ff81 !important;
 }
 .el-aside {
-  background-color: #4badde;
+  color: #fff;
+  background-color: #001529;
   color: #333;
-  text-align: center;
   line-height: 2rem;
+  transition: width 0.5s;
+  overflow-x: hidden !important;
+  .el-menu--collapse {
+    width: 0.64rem;
+  }
+  .nav-menu {
+    border: none;
+    height: calc(100vh - 0.5rem);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    font-size: 0.2rem;
+    color: #fff;
+    height: 0.5rem;
+    img {
+      width: 0.4rem;
+      margin: 0 0.15rem;
+    }
+  }
 }
-
 .el-main {
   background-color: #fff;
   color: #333;
