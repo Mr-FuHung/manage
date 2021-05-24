@@ -8,29 +8,16 @@
       </div>
       <!-- 导航菜单 -->
       <el-menu
-        default-active="1"
+        :default-active="activeMenu"
         class="nav-menu"
         router
         background-color="#001529"
         text-color="#fff"
         :collapse="isCollapse"
       >
-        <el-submenu index="1">
-          <template #title>
-            <i class="el-icon-setting"></i>
-            <span>系统管理</span>
-          </template>
-          <el-menu-item index="1-1">用户管理</el-menu-item>
-          <el-menu-item index="1-2">菜单管理</el-menu-item>
-        </el-submenu>
-        <el-submenu index="2">
-          <template #title>
-            <i class="el-icon-setting"></i>
-            <span>审批管理</span>
-          </template>
-          <el-menu-item index="2-1">休假申请</el-menu-item>
-          <el-menu-item index="2-2">休假审批</el-menu-item>
-        </el-submenu>
+      <!-- 递归遍历菜单 -->
+        <tree-menu :userMenu="userMenu"/>
+
       </el-menu>
     </el-aside>
     <el-container>
@@ -54,7 +41,7 @@
           </el-col>
           <!-- 角色 -->
           <el-col :md="{ span: 3, offset: 1 }" class="self">
-            <el-badge :is-dot="true" class="notice" type="danger">
+            <el-badge :is-dot="!!noticeCount" class="notice" type="danger">
               <i class="el-icon-bell"></i>
             </el-badge>
             <!-- 下拉菜单 -->
@@ -85,16 +72,24 @@
 </template>
 
 <script >
+import TreeMenu from "./../components/TreeMenu.vue";
 export default {
   name: "Home",
+  components: {
+    TreeMenu
+  },
   data() {
     return {
-      userInfo: {
-        userName: "admin",
-        userEmail: "1002150110@qq.com",
-      },
+      userInfo: this.$store.state.userInfo,
       isCollapse: false,
+      noticeCount: 0,
+      userMenu: [],
+      activeMenu:location.hash.slice(1)//获取路由地址
     };
+  },
+  mounted() {
+    this.getNoticeCount();
+    this.getMenuList();
   },
   methods: {
     handleCommand(key) {
@@ -103,6 +98,18 @@ export default {
         this.userInfo = {};
         this.$router.push("/login");
       }
+    },
+    async getNoticeCount() {
+      this.noticeCount = await this.$ajax({
+        mock: true,
+        url: "/leave/count",
+      });
+    },
+    async getMenuList() {
+      this.userMenu = await this.$ajax({
+        mock: true,
+        url: "/menu/list",
+      });
     },
     toggle() {
       this.isCollapse = !this.isCollapse;
