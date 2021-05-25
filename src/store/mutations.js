@@ -3,7 +3,7 @@
 *
 * */
 
-import storage from './../utils/storage';
+import storage from '@/utils/storage';
 export default {
     saveUserInfo(state, userInfo) {
         state.userInfo = userInfo;//存储用户信息

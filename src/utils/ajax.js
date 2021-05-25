@@ -3,9 +3,9 @@
 */
 
 import axios from 'axios';
-import config from '../config';
+import config from '@/config';
 import { ElMessage } from 'element-plus';
-import router from '../routes';
+import router from '@/routes';
 const NETWORK_ERROR = '网络请求异常';
 const instance = axios.create({
     // baseURL: config.mock ? config.mockApi : config.baseApi,

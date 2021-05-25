@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 // createWebHashHistory  以#的路由
-import Home from './../views/Home.vue'
+import Home from '@/views/Home.vue'
 
 const routes = [
     {
@@ -18,7 +18,7 @@ const routes = [
                 meta: {
                     title: '欢迎页'
                 },
-                component: () => import('./../views/Welcome.vue'),
+                component: () => import('@/views/Welcome.vue'),
             },
         ]
     },
@@ -28,7 +28,7 @@ const routes = [
         meta: {
             title: '登录页'
         },
-        component: () => import('./../views/Login.vue'),
+        component: () => import('@/views/Login.vue'),
     },
     // {
     //     name: '404',

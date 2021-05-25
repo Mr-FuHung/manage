@@ -3,7 +3,7 @@
 *@author Baron
 *
  */
-import config from './../config';
+import config from '@/config';
 function storage() {
     function getStorage() {
         return JSON.parse(window.localStorage.getItem(config.namespace) || "{}");

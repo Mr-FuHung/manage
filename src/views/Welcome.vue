@@ -42,7 +42,7 @@ export default {
   }
   .img {
     margin-left: 1rem;
-    background: url("./../assets/images/welcome.png") no-repeat;
+    background: url("@/assets/images/welcome.png") no-repeat;
     background-size: cover;
     width: 6.35rem;
     height: 4.7rem;

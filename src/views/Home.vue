@@ -15,9 +15,8 @@
         text-color="#fff"
         :collapse="isCollapse"
       >
-      <!-- 递归遍历菜单 -->
-        <tree-menu :userMenu="userMenu"/>
-
+        <!-- 递归遍历菜单 -->
+        <tree-menu :userMenu="userMenu" />
       </el-menu>
     </el-aside>
     <el-container>
@@ -31,16 +30,11 @@
             </div>
           </el-col>
           <!-- 面包屑 -->
-          <el-col :md="{ offset: 1, span: 18 }" class="hidden-md-only">
-            <el-breadcrumb separator-class="el-icon-arrow-right">
-              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-              <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-              <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-              <el-breadcrumb-item>活动详情</el-breadcrumb-item>
-            </el-breadcrumb>
+          <el-col :md="{span: 18 }" class="hidden-md-only">
+            <BreadCrumb/>
           </el-col>
           <!-- 角色 -->
-          <el-col :md="{ span: 3, offset: 1 }" class="self">
+          <el-col :md="{ span: 3, offset: 2 }" class="self">
             <el-badge :is-dot="!!noticeCount" class="notice" type="danger">
               <i class="el-icon-bell"></i>
             </el-badge>
@@ -72,11 +66,13 @@
 </template>
 
 <script >
-import TreeMenu from "./../components/TreeMenu.vue";
+import TreeMenu from "@/components/TreeMenu.vue";
+import BreadCrumb from "@/components/BreadCrumb.vue";
 export default {
   name: "Home",
   components: {
-    TreeMenu
+    TreeMenu,
+    BreadCrumb,
   },
   data() {
     return {
@@ -84,10 +80,11 @@ export default {
       isCollapse: false,
       noticeCount: 0,
       userMenu: [],
-      activeMenu:location.hash.slice(1)//获取路由地址
+      activeMenu: this.$route.path, //获取路由地址
     };
   },
   mounted() {
+    console.log(this.$route)
     this.getNoticeCount();
     this.getMenuList();
   },
