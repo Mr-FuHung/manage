@@ -6,6 +6,8 @@ import axios from 'axios';
 import config from '@/config';
 import { ElMessage } from 'element-plus';
 import router from '@/routes';
+import storage from '@/utils/storage';
+
 const NETWORK_ERROR = '网络请求异常';
 const instance = axios.create({
     // baseURL: config.mock ? config.mockApi : config.baseApi,
@@ -19,6 +21,8 @@ const instance = axios.create({
 instance.interceptors.request.use(request => {
     // 在发送请求之前做些什么
     const headers = request.headers;
+    const { token } = storage.getItem('userInfo');
+    headers.token || (headers.token = token)
     return request;
 }, error => {
     // 对请求错误做些什么
@@ -48,6 +52,7 @@ instance.interceptors.response.use(response => {
 *@param {*} options 请求配置
 * */
 function ajax(options) {
+    console.log('config',config)
     options.method = options.method || 'get';//默认get
     if (options.method.toLowerCase() === 'get') {
         options.params = options.data;//get请求传参改为统一的data

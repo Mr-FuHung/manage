@@ -73,7 +73,7 @@ export default {
           this.$ajax({
             url: "/users/login",
             method: "post",
-            mock: true,
+            mock: false,
             data: this.user,
           }).then((result) => {
             this.$store.commit('saveUserInfo',result)
