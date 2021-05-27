@@ -21,6 +21,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
+  background: #fff;
   .content {
     text-align: left;
     .sub-title {

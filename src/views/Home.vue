@@ -30,8 +30,8 @@
             </div>
           </el-col>
           <!-- 面包屑 -->
-          <el-col :md="{span: 18 }" class="hidden-md-only">
-            <BreadCrumb/>
+          <el-col :md="{ span: 18 }" class="hidden-md-only">
+            <BreadCrumb />
           </el-col>
           <!-- 角色 -->
           <el-col :md="{ span: 3, offset: 2 }" class="self">
@@ -84,7 +84,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$route)
+    console.log(this.$route);
     this.getNoticeCount();
     this.getMenuList();
   },
@@ -122,6 +122,9 @@ export default {
 .container {
   position: relative;
   height: 100vh;
+  .el-main {
+    background-color: #eef0f3;
+  }
 }
 .el-header,
 .el-footer {
@@ -184,6 +187,5 @@ export default {
   background-color: #fff;
   color: #333;
   text-align: center;
-  line-height: 1.6rem;
 }
 </style>

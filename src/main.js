@@ -17,4 +17,4 @@ const app = createApp(App);//创建Vue实例
 app.config.globalProperties.$ajax = ajax;//挂载全局变量
 app.config.globalProperties.$storage = storage;
 
-app.use(router).use(vuex).use(ElementPlus).mount('#app')//加载相关组件并挂载dom
+app.use(router).use(vuex).use(ElementPlus, { size: 'small ' }).mount('#app')//加载相关组件并挂载dom

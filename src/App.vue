@@ -7,11 +7,5 @@
 
 <style lang="scss">
 @import "@/assets/css/reset.css";
-html {
-  font-size: 100px;
-}
-body {
-  font-size: 14px;
-}
-
+@import "@/assets/css/base.scss";
 </style>
