@@ -1,15 +1,15 @@
 <template>
   <div class="user-mangn">
     <div class="query-form">
-      <el-form inline :model="user">
-        <el-form-item>
+      <el-form inline :model="user" ref="form">
+        <el-form-item label="用户ID" prop="userId">
           <el-input v-model="user.userId" placeholder="请输入用户ID" />
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="用户名称" prop="userName">
           <el-input v-model="user.userName" placeholder="请输入用户名称" />
         </el-form-item>
-        <el-form-item>
-          <el-select v-model="user.state">
+        <el-form-item label="状态" prop="state">
+          <el-select v-model="user.state" size="small">
             <el-option :value="0" label="所有"></el-option>
             <el-option :value="1" label="在职"></el-option>
             <el-option :value="2" label="离职"></el-option>
@@ -17,8 +17,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">查询</el-button>
-          <el-button>重置</el-button>
+          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -53,20 +53,32 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        class="pagination"
+        background
+        layout="prev, pager, next, sizes"
+        :page-sizes="[10, 20, 50, 100]"
+        :total="pages.total"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, getCurrentInstance } from "vue";
 // reactive//用来创建引用类型
-// ref//用来创建基础类型
+// ref//用来创建基础类型,需用.size配合使用
 export default {
   name: "User",
   setup() {
+    const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
+    //初始化查询选项
     const user = reactive({
       state: 0,
     });
+    //初始表格头
     const tableHeaderData = reactive([
       {
         label: "用户ID",
@@ -104,50 +116,63 @@ export default {
         width: 180,
       },
     ]);
-    const tableData = reactive([
-      {
-        state: 1,
-        role: "o",
-        roleList: [
-          "60180b07b1eaed6c45fbebdb",
-          "60150cb764de99631b2c3cd3",
-          "60180b59b1eaed6c45fbebdc",
-        ],
-        deptId: ["60167059c9027b7d2c520a61", "60167345c6a4417f2d27506f"],
-        userId: 1000002,
-        userName: "admin",
-        userEmail: " admin@imooc.com",
-        createTime: "2021-01-17 13:32:06",
-        lastLoginTime: "2021-01-17 13:32:06",
-        _v: 0,
-        job: "前端架构师",
-        mobile: "1761102000o",
-      },
-      {
-        state: 1,
-        role: "o",
-        roleList: [
-          "60180b07b1eaed6c45fbebdb",
-          "60150cb764de99631b2c3cd3",
-          "60180b59b1eaed6c45fbebdc",
-        ],
-        deptId: ["60167059c9027b7d2c520a61", "60167345c6a4417f2d27506f"],
-        userId: 1000002,
-        userName: "admin",
-        userEmail: " admin@imooc.com",
-        createTime: "2021-01-17 13:32:06",
-        lastLoginTime: "2021-01-17 13:32:06",
-        _v: 0,
-        job: "前端架构师",
-        mobile: "1761102000o",
-      },
-    ]);
-    onMounted(() => {});
-
+    //初始表格
+    const tableData = ref([]);
+    //初始化页码
+    const pages = reactive({
+      pageSize: 10,
+      pageNum: 1,
+      total: 0,
+    });
+    onMounted(() => {
+      //获取表格数据
+      getUserList();
+    });
+    const getUserList = async function () {
+      const params = Object.assign(user, {
+        pageSize: pages.pageSize,
+        pageNum: pages.pageNum,
+      });
+      const { list, page } = await ctx.$ajax({
+        url: "/users/list",
+        data: params,
+        method: "get",
+        mock: true,
+      });
+      //表格数据
+      tableData.value = list;
+      //页码
+      pages.total = page.total;
+    };
+    //查询
+    const handleQuery = () => {
+      getUserList();
+    };
+    //重置
+    const handleReset = () => {
+      //组件内置方法
+      ctx.$refs.form.resetFields();
+    };
+    //分页事件
+    const handleCurrentChange = (current) => {
+      pages.pageNum = current;
+      getUserList();
+    };
+    //分页大小事件
+    const handleSizeChange = (val) => {
+      pages.pageSize = val;
+      getUserList();
+    };
+    //导出
     return {
       user,
       tableHeaderData,
       tableData,
+      pages,
+      handleQuery,
+      handleReset,
+      handleCurrentChange,
+      handleSizeChange,
     };
   },
 };
