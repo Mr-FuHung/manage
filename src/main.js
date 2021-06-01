@@ -7,7 +7,8 @@ import 'element-plus/lib/theme-chalk/index.css';//组件库样式
 import locale from 'element-plus/lib/locale/lang/zh-cn'//切换为中文
 import 'element-plus/lib/theme-chalk/display.css';//隐藏样式
 // import config from './config';
-import ajax from '@/utils/ajax';
+// import ajax from '@/utils/ajax';
+import api from '@/api';
 import storage from '@/utils/storage';
 
 
@@ -15,7 +16,8 @@ import storage from '@/utils/storage';
 
 const app = createApp(App);//创建Vue实例
 
-app.config.globalProperties.$ajax = ajax;//挂载全局变量
+// app.config.globalProperties.$ajax = ajax;//挂载全局变量
+app.config.globalProperties.$api = api;//挂载全局变量
 app.config.globalProperties.$storage = storage;
 
 app.use(router).use(vuex).use(ElementPlus, { size: 'small ', locale }).mount('#app')//加载相关组件并挂载dom

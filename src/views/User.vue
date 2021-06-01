@@ -27,27 +27,28 @@
         <el-button @click="handleEdit(scope.$index, scope.row)">
           新增
         </el-button>
-        <el-button type="danger" @click="handleDelete(scope.$index, scope.row)">
-          批量删除
-        </el-button>
+        <el-button type="danger" @click="handlePatchDel"> 批量删除 </el-button>
       </div>
-      <el-table stripe size="medium" :data="tableData">
+      <el-table
+        stripe
+        size="medium"
+        :data="tableData"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" align="center" />
         <el-table-column
           v-for="item in tableHeaderData"
           :key="item.prop"
           :prop="item.prop"
           :label="item.label"
+          :formatter="item.formatter"
         />
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <el-button @click="handleEdit(scope.$index, scope.row)">
               编辑
             </el-button>
-            <el-button
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-            >
+            <el-button type="danger" @click="handleDel(scope.row)">
               删除
             </el-button>
           </template>
@@ -99,11 +100,25 @@ export default {
         label: "系统角色",
         prop: "role",
         width: 180,
+        formatter(row, column, value) {
+          return {
+            0: "超级管理员",
+            1: "管理员",
+            2: "普通用户",
+          }[value];
+        },
       },
       {
         label: "用户状态",
         prop: "state",
         width: 180,
+        formatter(row, column, value) {
+          return {
+            1: "在职",
+            2: "离职",
+            3: "试用期",
+          }[value];
+        },
       },
       {
         label: "注册时间",
@@ -124,21 +139,20 @@ export default {
       pageNum: 1,
       total: 0,
     });
+    //用户列表多选数量
+    const checkedUsersId = ref([]);
+
     onMounted(() => {
       //获取表格数据
       getUserList();
     });
+
     const getUserList = async function () {
       const params = Object.assign(user, {
         pageSize: pages.pageSize,
         pageNum: pages.pageNum,
       });
-      const { list, page } = await ctx.$ajax({
-        url: "/users/list",
-        data: params,
-        method: "get",
-        mock: true,
-      });
+      const { list, page } = await ctx.$api.getUserList(params);
       //表格数据
       tableData.value = list;
       //页码
@@ -163,16 +177,51 @@ export default {
       pages.pageSize = val;
       getUserList();
     };
+    // 用户单个删除
+    const handleDel = (row) => {
+      ctx.$api
+        .userDel({
+          userIds: [row.userId],
+        })
+        .then(() => {
+          ctx.$message.success("删除成功");
+          getUserList();
+        });
+    };
+    // 用户批量删除
+    const handlePatchDel = () => {
+      if (checkedUsersId.value.length === 0) {
+        return ctx.$message.error("请选择需要删除的用户");
+      }
+      ctx.$api
+        .userDel({
+          userIds: checkedUsersId.value,
+        })
+        .then(() => {
+          ctx.$message.success("删除成功");
+          getUserList();
+        });
+    };
+    //多选
+    const handleSelectionChange = (list) => {
+      checkedUsersId.value = list.map((item) => {
+        return item.userId;
+      });
+    };
     //导出
     return {
       user,
       tableHeaderData,
       tableData,
       pages,
+      checkedUsersId,
       handleQuery,
       handleReset,
       handleCurrentChange,
       handleSizeChange,
+      handleDel,
+      handlePatchDel,
+      handleSelectionChange,
     };
   },
 };

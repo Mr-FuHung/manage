@@ -33,7 +33,7 @@
 
 <script>
 export default {
-  name:'Login',
+  name: "Login",
   data() {
     return {
       user: {
@@ -66,22 +66,15 @@ export default {
   },
   methods: {
     login() {
-      this.$refs.userForm.validate((valid) => { //验证表单是否rules符合验证规则
+      this.$refs.userForm.validate((valid) => {
+        //验证表单是否rules符合验证规则
 
         if (valid) {
-
-          this.$ajax({
-            url: "/users/login",
-            method: "post",
-            mock: false,
-            data: this.user,
-          }).then((result) => {
-            this.$store.commit('saveUserInfo',result)
-            this.$router.push('/');
+          this.$api.login(this.user).then((result) => {
+            this.$store.commit("saveUserInfo", result);
+            this.$router.push("/");
           });
-
         }
-
       });
     },
   },

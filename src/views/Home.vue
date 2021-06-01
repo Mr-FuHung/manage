@@ -97,16 +97,10 @@ export default {
       }
     },
     async getNoticeCount() {
-      this.noticeCount = await this.$ajax({
-        mock: true,
-        url: "/leave/count",
-      });
+      this.noticeCount = await this.$api.getNoticeCount();
     },
     async getMenuList() {
-      this.userMenu = await this.$ajax({
-        mock: true,
-        url: "/menu/list",
-      });
+      this.userMenu = await this.$api.getMenuList();
     },
     toggle() {
       this.isCollapse = !this.isCollapse;
