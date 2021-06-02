@@ -177,9 +177,4 @@ export default {
     }
   }
 }
-.el-main {
-  background-color: #fff;
-  color: #333;
-  text-align: center;
-}
 </style>

@@ -24,9 +24,7 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button @click="handleEdit(scope.$index, scope.row)">
-          新增
-        </el-button>
+        <el-button @click="handleAdd"> 新增 </el-button>
         <el-button type="danger" @click="handlePatchDel"> 批量删除 </el-button>
       </div>
       <el-table
@@ -64,6 +62,84 @@
         @size-change="handleSizeChange"
       />
     </div>
+
+    <!-- 新增弹窗开始 -->
+    <el-dialog title="新增用户" v-model="showDialog">
+      <el-form
+        ref="dialogUserForm"
+        size="medium"
+        :model="addUserForm"
+        label-width="1.2rem"
+        :rules="rules"
+      >
+        <el-form-item label="用户名" prop="userName">
+          <el-input
+            prefix-icon="el-icon-user"
+            v-model.trim="addUserForm.userName"
+            placeholder="请输入用户名称"
+          />
+        </el-form-item>
+        <el-form-item label="邮箱" prop="userEmail">
+          <el-input
+            prefix-icon="el-icon-message"
+            v-model.trim="addUserForm.userEmail"
+            placeholder="请输入用户邮箱"
+          >
+            <template #append>
+              <el-select v-model="addUserForm.userEmailSuffix">
+                <el-option label="@qq.com" value="@qq.com"></el-option>
+                <el-option label="@163.com" value="@163.com"></el-option>
+              </el-select>
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="mobile">
+          <el-input
+            prefix-icon="el-icon-mobile-phone"
+            v-model.trim="addUserForm.mobile"
+            placeholder="请输入手机号"
+          />
+        </el-form-item>
+        <el-form-item label="岗位" prop="job">
+          <el-input
+            v-model="addUserForm.job"
+            prefix-icon="el-icon-document"
+            placeholder="请输入岗位"
+          />
+        </el-form-item>
+        <el-form-item label="状态" prop="state">
+          <el-select v-model="addUserForm.state" placeholder="请选择活动区域">
+            <el-option label="在职" :value="1"></el-option>
+            <el-option label="离职" :value="2"></el-option>
+            <el-option label="试用期" :value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="系统角色" prop="roleList">
+          <el-select
+            v-model="addUserForm.roleList"
+            placeholder="请选择系统角色"
+          >
+            <el-option label="在职" value="1"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="部门" prop="deptId">
+          <el-cascader
+            v-model="addUserForm.deptId"
+            placeholder="请选择所属部门"
+            :options="[]"
+            :props="{ checkStrictly: true, value: '_id', label: 'deptName' }"
+            clearable
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button>取 消</el-button>
+          <el-button type="primary">确 定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    <!-- 新增弹窗结束 -->
   </div>
 </template>
 
@@ -133,6 +209,8 @@ export default {
     ]);
     //初始表格
     const tableData = ref([]);
+    //弹窗显示隐藏
+    const showDialog = ref(false);
     //初始化页码
     const pages = reactive({
       pageSize: 10,
@@ -141,12 +219,53 @@ export default {
     });
     //用户列表多选数量
     const checkedUsersId = ref([]);
+    //新增弹窗表单
+    const addUserForm = reactive({
+      userEmailSuffix: "@qq.com",
+      state: 3,
+    });
+    //新增弹窗表单验证规则
+    const rules = reactive({
+      userName: [
+        {
+          required: true,
+          message: "请输入用户名称",
+          trigger: "blur",
+        },
+      ],
+      userEmail: [
+        {
+          required: true,
+          message: "请输入用户邮箱",
+          trigger: "blur",
+        },
+      ],
+      mobile: [
+        // {
+        //   required: true,
+        //   message: "请输入手机号",
+        //   trigger: "blur",
+        // },
+        {
+          pattern: /^1[3-9]\d{9}/,
+          message: "请输入正确的手机号格式",
+          trigger: ["blur", "change"],
+        },
+      ],
+      deptId: [
+        {
+          required: true,
+          message: "请选择部门",
+          trigger: "blur",
+        },
+      ],
+    });
 
     onMounted(() => {
       //获取表格数据
       getUserList();
     });
-
+    //获取列表
     const getUserList = async function () {
       const params = Object.assign(user, {
         pageSize: pages.pageSize,
@@ -202,11 +321,15 @@ export default {
           getUserList();
         });
     };
-    //多选
+    //列表多选
     const handleSelectionChange = (list) => {
       checkedUsersId.value = list.map((item) => {
         return item.userId;
       });
+    };
+    //新增按钮
+    const handleAdd = () => {
+      showDialog.value = true;
     };
     //导出
     return {
@@ -214,6 +337,9 @@ export default {
       tableHeaderData,
       tableData,
       pages,
+      showDialog,
+      rules,
+      addUserForm,
       checkedUsersId,
       handleQuery,
       handleReset,
@@ -222,6 +348,7 @@ export default {
       handleDel,
       handlePatchDel,
       handleSelectionChange,
+      handleAdd,
     };
   },
 };
@@ -229,6 +356,9 @@ export default {
 
 <style lang='scss'>
 .el-form--inline .el-form-item {
-  margin-right: 30px;
+  margin-right: 0.3rem;
+}
+.el-select .el-input {
+  width: 1.3rem;
 }
 </style>
