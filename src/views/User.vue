@@ -18,7 +18,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button @click="handleReset('form')">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -118,15 +118,24 @@
           <el-select
             v-model="addUserForm.roleList"
             placeholder="请选择系统角色"
+            clearable
+            multiple
+            style="width: 100%"
           >
-            <el-option label="在职" value="1"></el-option>
+            <el-option
+              :label="item.roleName"
+              :value="item._id"
+              v-for="item in roleList"
+              :key="item._id"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="部门" prop="deptId">
           <el-cascader
+            style="width: 4rem"
             v-model="addUserForm.deptId"
             placeholder="请选择所属部门"
-            :options="[]"
+            :options="deptList"
             :props="{ checkStrictly: true, value: '_id', label: 'deptName' }"
             clearable
           />
@@ -134,8 +143,8 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button>取 消</el-button>
-          <el-button type="primary">确 定</el-button>
+          <el-button @click="handleClose">取 消</el-button>
+          <el-button type="primary" @click="handleSubmit">确 定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -144,9 +153,11 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref, getCurrentInstance } from "vue";
+import { onMounted, reactive, ref, getCurrentInstance, toRaw } from "vue";
 // reactive//用来创建引用类型
 // ref//用来创建基础类型,需用.size配合使用
+//toRaw 响应式对象 转为普通对象
+//getCurrentInstance  初始化一个实例，拿到vue3上下文的配置，ctx
 export default {
   name: "User",
   setup() {
@@ -211,6 +222,8 @@ export default {
     const tableData = ref([]);
     //弹窗显示隐藏
     const showDialog = ref(false);
+    //用户操作状态
+    const action = ref("add");
     //初始化页码
     const pages = reactive({
       pageSize: 10,
@@ -260,10 +273,15 @@ export default {
         },
       ],
     });
-
+    //角色列表
+    const roleList = ref([]);
+    //部门列表
+    const deptList = ref([]);
     onMounted(() => {
       //获取表格数据
       getUserList();
+      getRoleList();
+      getDeptList();
     });
     //获取列表
     const getUserList = async function () {
@@ -282,9 +300,9 @@ export default {
       getUserList();
     };
     //重置
-    const handleReset = () => {
+    const handleReset = (form) => {
       //组件内置方法
-      ctx.$refs.form.resetFields();
+      ctx.$refs[form].resetFields();
     };
     //分页事件
     const handleCurrentChange = (current) => {
@@ -329,7 +347,44 @@ export default {
     };
     //新增按钮
     const handleAdd = () => {
+      action.value = "add";
       showDialog.value = true;
+    };
+    //角色列表
+    const getRoleList = () => {
+      ctx.$api.getRoleList().then((list) => {
+        roleList.value = list;
+      });
+    };
+    //部门列表
+    const getDeptList = () => {
+      ctx.$api.getDeptList().then((list) => {
+        deptList.value = list;
+      });
+    };
+    //取消
+    const handleClose = () => {
+      showDialog.value = false;
+      handleReset("dialogUserForm");
+    };
+    //提交
+    const handleSubmit = () => {
+      ctx.$refs.dialogUserForm.validate(async (valid) => {
+        //验证表单是否rules符合验证规则
+        if (valid) {
+          let params = Object.assign({}, toRaw(addUserForm)); //转为普通对象
+          params.userEmail += params.userEmailSuffix;
+          delete params.userEmailSuffix;
+          params.action = action.value;
+          let res = await ctx.$api.userSubmit(params);
+          if (res) {
+            showDialog.value = false;
+            ctx.$message.success("用户创建成功");
+            handleReset("dialogUserForm");
+            getUserList();
+          }
+        }
+      });
     };
     //导出
     return {
@@ -340,9 +395,13 @@ export default {
       showDialog,
       rules,
       addUserForm,
+      deptList,
+      roleList,
       checkedUsersId,
       handleQuery,
       handleReset,
+      handleClose,
+      handleSubmit,
       handleCurrentChange,
       handleSizeChange,
       handleDel,
@@ -358,7 +417,7 @@ export default {
 .el-form--inline .el-form-item {
   margin-right: 0.3rem;
 }
-.el-select .el-input {
-  width: 1.3rem;
+.el-dialog .el-select .el-input {
+  width: 130px;
 }
 </style>
