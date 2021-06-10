@@ -27,6 +27,7 @@
         <el-button @click="handleAdd"> 新增 </el-button>
         <el-button type="danger" @click="handlePatchDel"> 批量删除 </el-button>
       </div>
+
       <el-table
         stripe
         size="medium"
@@ -43,9 +44,7 @@
         />
         <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button @click="handleEdit(scope.$index, scope.row)">
-              编辑
-            </el-button>
+            <el-button @click="handleEdit(scope.row)"> 编辑 </el-button>
             <el-button type="danger" @click="handleDel(scope.row)">
               删除
             </el-button>
@@ -76,6 +75,7 @@
           <el-input
             prefix-icon="el-icon-user"
             v-model.trim="addUserForm.userName"
+            :disabled="action === 'edit'"
             placeholder="请输入用户名称"
           />
         </el-form-item>
@@ -83,6 +83,7 @@
           <el-input
             prefix-icon="el-icon-message"
             v-model.trim="addUserForm.userEmail"
+            :disabled="action === 'edit'"
             placeholder="请输入用户邮箱"
           >
             <template #append>
@@ -154,6 +155,7 @@
 
 <script>
 import { onMounted, reactive, ref, getCurrentInstance, toRaw } from "vue";
+import utils from "@/utils/utils.js";
 // reactive//用来创建引用类型
 // ref//用来创建基础类型,需用.size配合使用
 //toRaw 响应式对象 转为普通对象
@@ -211,11 +213,17 @@ export default {
         label: "注册时间",
         prop: "createTime",
         width: 180,
+        formatter(row, column, value) {
+          return utils.formateDate(new Date(value));
+        },
       },
       {
         label: "最后登录时间",
-        prop: "lastLoginTime",
+        prop: "updateTime",
         width: 180,
+        formatter(row, column, value) {
+          return utils.formateDate(new Date(value));
+        },
       },
     ]);
     //初始表格
@@ -386,11 +394,20 @@ export default {
         }
       });
     };
+    //编辑
+    const handleEdit = (row) => {
+      showDialog.value = true;
+      action.value = "edit";
+      ctx.$nextTick(() => {
+        Object.assign(addUserForm, row);
+      });
+    };
     //导出
     return {
       user,
       tableHeaderData,
       tableData,
+      action,
       pages,
       showDialog,
       rules,
@@ -398,6 +415,7 @@ export default {
       deptList,
       roleList,
       checkedUsersId,
+      handleEdit,
       handleQuery,
       handleReset,
       handleClose,

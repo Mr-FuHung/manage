@@ -10,7 +10,7 @@ const apis = {
         login: data => $ajax({
             url: "/users/login",
             method: "post",
-            mock: true,
+            mock: false,
             data,
         })
     },
@@ -19,7 +19,7 @@ const apis = {
         getUserList: data => $ajax({
             url: "/users/list",
             data,
-            mock: true,
+            mock: false,
         }),
         //菜单列表
         getMenuList: () => $ajax({
@@ -39,20 +39,20 @@ const apis = {
             data
         }),
         //角色列表
-        getRoleList:()=>$ajax({
+        getRoleList: () => $ajax({
             mock: true,
             url: "/roles/allList",
         }),
         //部门列表
-        getDeptList:()=>$ajax({
+        getDeptList: () => $ajax({
             mock: true,
             url: "/dept/list",
         }),
         //新增用户
-        userSubmit:(data)=>$ajax({
+        userSubmit: (data) => $ajax({
             mock: true,
             url: "/users/operate",
-            method:'post',
+            method: 'post',
             data
         })
     }

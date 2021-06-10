@@ -21,8 +21,8 @@ const instance = axios.create({
 instance.interceptors.request.use(request => {
     // 在发送请求之前做些什么
     const headers = request.headers;
-    const { token } = storage.getItem('userInfo');
-    headers.token || (headers.token = token)
+    const { token } = storage.getItem('userInfo') || {};
+    headers.Authorization || (headers.Authorization = `Bearer ${token}`)
     return request;
 }, error => {
     // 对请求错误做些什么
@@ -34,7 +34,7 @@ instance.interceptors.request.use(request => {
 instance.interceptors.response.use(response => {
     const { code, data, msg } = response.data;
     // 对响应数据做点什么
-    if (code === 200) {
+    if (code === 200 || code === 0) {
         return data;
     } else if (code === 40001) {
         ElMessage.error(msg);
@@ -52,7 +52,7 @@ instance.interceptors.response.use(response => {
 *@param {*} options 请求配置
 * */
 function ajax(options) {
-    console.log('config',config)
+    console.log('config', config)
     options.method = options.method || 'get';//默认get
     if (options.method.toLowerCase() === 'get') {
         options.params = options.data;//get请求传参改为统一的data
