@@ -97,10 +97,12 @@ export default {
       }
     },
     async getNoticeCount() {
-      this.noticeCount = await this.$api.getNoticeCount();
+      let { data } = await this.$api.getNoticeCount();
+      this.noticeCount = data;
     },
     async getMenuList() {
-      this.userMenu = await this.$api.getMenuList();
+      let { data } = await this.$api.getMenuList();
+      this.userMenu = data;
     },
     toggle() {
       this.isCollapse = !this.isCollapse;

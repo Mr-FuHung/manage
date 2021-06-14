@@ -35,7 +35,7 @@ instance.interceptors.response.use(response => {
     const { code, data, msg } = response.data;
     // 对响应数据做点什么
     if (code === 200 || code === 0) {
-        return data;
+        return { data, msg };
     } else if (code === 40001) {
         ElMessage.error(msg);
         router.push({ name: 'login' })
@@ -52,18 +52,18 @@ instance.interceptors.response.use(response => {
 *@param {*} options 请求配置
 * */
 function ajax(options) {
-    console.log('config', config)
     options.method = options.method || 'get';//默认get
     if (options.method.toLowerCase() === 'get') {
         options.params = options.data;//get请求传参改为统一的data
     }
+    let isMock = config.mock;
     if (typeof options.mock !== 'undefined') {
-        config.mock = options.mock;
+        isMock = options.mock;
     }
     if (config.env === 'prod') {
         instance.defaults.baseURL = config.baseApi;//为生产环境时，强制切换为baseApi，以防万一
     } else {
-        instance.defaults.baseURL = config.mock ? config.mockApi : config.baseApi;//判断是否开启mockApi
+        instance.defaults.baseURL = isMock ? config.mockApi : config.baseApi;//判断是否开启mockApi
     }
     return instance(options);
 }

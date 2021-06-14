@@ -31,10 +31,9 @@ const apis = {
             mock: true,
             url: "/leave/count",
         }),
-        //待办事项
+        //删除
         userDel: data => $ajax({
-            mock: true,
-            method: "post",
+            method: "delete",
             url: "/users/delete",
             data
         }),
@@ -48,9 +47,8 @@ const apis = {
             mock: true,
             url: "/dept/list",
         }),
-        //新增用户
+        //新增,修改用户
         userSubmit: (data) => $ajax({
-            mock: true,
             url: "/users/operate",
             method: 'post',
             data

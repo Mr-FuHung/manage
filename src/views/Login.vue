@@ -71,7 +71,7 @@ export default {
 
         if (valid) {
           this.$api.login(this.user).then((result) => {
-            this.$store.commit("saveUserInfo", result);
+            this.$store.commit("saveUserInfo", result.data);
             this.$router.push("/");
           });
         }

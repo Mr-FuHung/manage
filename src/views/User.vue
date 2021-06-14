@@ -83,7 +83,6 @@
           <el-input
             prefix-icon="el-icon-message"
             v-model.trim="addUserForm.userEmail"
-            :disabled="action === 'edit'"
             placeholder="请输入用户邮箱"
           >
             <template #append>
@@ -113,6 +112,17 @@
             <el-option label="在职" :value="1"></el-option>
             <el-option label="离职" :value="2"></el-option>
             <el-option label="试用期" :value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="用户角色" prop="role">
+          <el-select
+            v-model="addUserForm.role"
+            placeholder="请选择用户角色"
+            clearable
+          >
+            <el-option label="超级管理员" :value="0" />
+            <el-option label="管理员" :value="1" />
+            <el-option label="普通用户" :value="2" />
           </el-select>
         </el-form-item>
         <el-form-item label="系统角色" prop="roleList">
@@ -244,6 +254,7 @@ export default {
     const addUserForm = reactive({
       userEmailSuffix: "@qq.com",
       state: 3,
+      role: 2,
     });
     //新增弹窗表单验证规则
     const rules = reactive({
@@ -297,7 +308,9 @@ export default {
         pageSize: pages.pageSize,
         pageNum: pages.pageNum,
       });
-      const { list, page } = await ctx.$api.getUserList(params);
+      const {
+        data: { list, page },
+      } = await ctx.$api.getUserList(params);
       //表格数据
       tableData.value = list;
       //页码
@@ -328,8 +341,8 @@ export default {
         .userDel({
           userIds: [row.userId],
         })
-        .then(() => {
-          ctx.$message.success("删除成功");
+        .then((result) => {
+          ctx.$message.success(result.msg);
           getUserList();
         });
     };
@@ -342,8 +355,8 @@ export default {
         .userDel({
           userIds: checkedUsersId.value,
         })
-        .then(() => {
-          ctx.$message.success("删除成功");
+        .then((result) => {
+          ctx.$message.success(result.msg);
           getUserList();
         });
     };
@@ -361,13 +374,13 @@ export default {
     //角色列表
     const getRoleList = () => {
       ctx.$api.getRoleList().then((list) => {
-        roleList.value = list;
+        roleList.value = list.data;
       });
     };
     //部门列表
     const getDeptList = () => {
       ctx.$api.getDeptList().then((list) => {
-        deptList.value = list;
+        deptList.value = list.data;
       });
     };
     //取消
@@ -384,10 +397,10 @@ export default {
           params.userEmail += params.userEmailSuffix;
           delete params.userEmailSuffix;
           params.action = action.value;
-          let res = await ctx.$api.userSubmit(params);
-          if (res) {
+          let { data, msg } = await ctx.$api.userSubmit(params);
+          if (data) {
             showDialog.value = false;
-            ctx.$message.success("用户创建成功");
+            ctx.$message.success(msg);
             handleReset("dialogUserForm");
             getUserList();
           }
@@ -398,8 +411,12 @@ export default {
     const handleEdit = (row) => {
       showDialog.value = true;
       action.value = "edit";
+      let email = row.userEmail.split("@");
       ctx.$nextTick(() => {
-        Object.assign(addUserForm, row);
+        Object.assign(addUserForm, row, {
+          userEmailSuffix: `@${email[1]}`,
+          userEmail: email[0],
+        });
       });
     };
     //导出
