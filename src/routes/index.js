@@ -32,7 +32,7 @@ const routes = [
                 name: 'menu',
                 path: 'system/menu',
                 meta: {
-                    title: '用户管理'
+                    title: '菜单管理'
                 },
                 component: () => import('@/views/Menu.vue'),
             },

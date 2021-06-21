@@ -9,19 +9,17 @@ const apis = {
     login: data => $ajax({
         url: "/users/login",
         method: "post",
-        mock: false,
         data,
     }),
     //用户列表
     getUserList: data => $ajax({
         url: "/users/list",
         data,
-        mock: false,
     }),
     //菜单列表
-    getMenuList: () => $ajax({
-        mock: true,
+    getMenuList: (data) => $ajax({
         url: "/menu/list",
+        data
     }),
     //待办事项
     getNoticeCount: () => $ajax({
@@ -55,7 +53,12 @@ const apis = {
         url: "/menu/operate",
         method: 'post',
         data,
-        mock:true
+    }),
+    //菜单删除
+    menuDel: data => $ajax({
+        method: "delete",
+        url: "/menu/delete",
+        data
     })
 
 }

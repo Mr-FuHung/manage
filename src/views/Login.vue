@@ -14,6 +14,7 @@
         </el-form-item>
         <el-form-item prop="userPwd">
           <el-input
+            @keyup.enter="login"
             type="password"
             prefix-icon="el-icon-lock"
             placeholder="密码"

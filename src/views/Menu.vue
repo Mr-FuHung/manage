@@ -23,7 +23,7 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd(1)"> 创建 </el-button>
+        <el-button type="primary" @click="handleAdd(1)"> 新增 </el-button>
       </div>
 
       <el-table
@@ -43,7 +43,7 @@
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button type="primary" @click="handleAdd(2, scope.row)">
-              新增
+              新增子级
             </el-button>
             <el-button @click="handleEdit(scope.row)"> 编辑 </el-button>
             <el-button type="danger" @click="handleDel(scope.row)">
@@ -156,6 +156,7 @@ export default {
       //新增
       showDialog: false,
       addMenuForm: {
+        parentId: [null],
         menuState: 1,
         menuType: 1,
       },
@@ -271,6 +272,7 @@ export default {
         if (valid) {
           let { addMenuForm, action } = this;
           const params = { ...addMenuForm, action };
+          delete params.children;
           let { msg } = await this.$api.menuSubmit(params);
           this.showDialog = false;
           this.$message.success(msg);
@@ -283,17 +285,14 @@ export default {
     handleEdit(row) {
       this.showDialog = true;
       this.action = "edit";
-      console.log(row);
       this.$nextTick(() => {
         Object.assign(this.addMenuForm, row);
-        this.addMenuForm.parentId = [...row.parentId, row._id].filter(
-          (value) => value
-        );
+        console.log(this.addMenuForm)
       });
     },
     //删除
-    handleDel(_id) {
-      let { msg } = await this.$api.menuSubmit({ _id, action: "delete" });
+    async handleDel(_id) {
+      let { msg } = await this.$api.menuDel({ _id });
       this.$message.success(msg);
       this.getTableData();
     },
