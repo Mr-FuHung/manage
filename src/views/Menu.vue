@@ -1,5 +1,5 @@
 <template>
-  <div class="user-mangn">
+  <div class="menu-mangn">
     <div class="query-form">
       <el-form inline :model="queryForm" ref="form">
         <el-form-item label="菜单名称" prop="menuName">
@@ -23,7 +23,7 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd(1)"> 新增 </el-button>
+        <el-button type="primary" @click="handleAdd(1)"> 创建 </el-button>
       </div>
 
       <el-table
@@ -59,14 +59,14 @@
       <el-form
         ref="dialogMenuForm"
         size="medium"
-        :model="addMenuForm"
+        :model="operateForm"
         label-width="1.2rem"
         :rules="rules"
       >
         <el-form-item label="父级菜单" prop="parentId">
           <el-cascader
             style="width: 4rem"
-            v-model="addMenuForm.parentId"
+            v-model="operateForm.parentId"
             placeholder="请选择父级菜单"
             :options="tableData"
             :props="{ checkStrictly: true, label: 'menuName', value: '_id' }"
@@ -75,54 +75,54 @@
           <span>不选，则创建一级菜单</span>
         </el-form-item>
         <el-form-item label="菜单类型" prop="menuType">
-          <el-radio-group v-model="addMenuForm.menuType">
+          <el-radio-group v-model="operateForm.menuType">
             <el-radio :label="1">菜单</el-radio>
             <el-radio :label="2">按钮</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="菜单名称" prop="menuName">
           <el-input
-            v-model.trim="addMenuForm.menuName"
+            v-model.trim="operateForm.menuName"
             placeholder="请输入菜单名称"
           />
         </el-form-item>
         <el-form-item
           label="菜单图标"
           prop="icon"
-          v-show="addMenuForm.menuType == 1"
+          v-show="operateForm.menuType == 1"
         >
-          <el-input v-model="addMenuForm.icon" placeholder="请输入菜单图标" />
+          <el-input v-model="operateForm.icon" placeholder="请输入菜单图标" />
         </el-form-item>
         <el-form-item
           label="路由地址"
           prop="path"
-          v-show="addMenuForm.menuType == 1"
+          v-show="operateForm.menuType == 1"
         >
-          <el-input v-model="addMenuForm.path" placeholder="请输入路由地址" />
+          <el-input v-model="operateForm.path" placeholder="请输入路由地址" />
         </el-form-item>
         <el-form-item
           label="权限标识"
           prop="menuCode"
-          v-show="addMenuForm.menuType == 2"
+          v-show="operateForm.menuType == 2"
         >
           <el-input
-            v-model="addMenuForm.menuCode"
+            v-model="operateForm.menuCode"
             placeholder="请输入权限标识"
           />
         </el-form-item>
         <el-form-item
           label="组件路径"
           prop="component"
-          v-show="addMenuForm.menuType == 1"
+          v-show="operateForm.menuType == 1"
         >
           <el-input
-            v-model="addMenuForm.component"
+            v-model="operateForm.component"
             placeholder="请输入组件路径"
           />
         </el-form-item>
 
         <el-form-item label="菜单状态" prop="menuState">
-          <el-radio-group v-model="addMenuForm.menuState">
+          <el-radio-group v-model="operateForm.menuState">
             <el-radio :label="1">正常</el-radio>
             <el-radio :label="2">停用</el-radio>
           </el-radio-group>
@@ -155,7 +155,7 @@ export default {
       },
       //新增
       showDialog: false,
-      addMenuForm: {
+      operateForm: {
         parentId: [null],
         menuState: 1,
         menuType: 1,
@@ -260,7 +260,7 @@ export default {
       this.action = "add";
       this.showDialog = true;
       if (type === 2) {
-        this.addMenuForm.parentId = [...row.parentId, row._id].filter(
+        this.operateForm.parentId = [...row.parentId, row._id].filter(
           (value) => value
         );
       }
@@ -270,8 +270,8 @@ export default {
       //待优化
       this.$refs.dialogMenuForm.validate(async (valid) => {
         if (valid) {
-          let { addMenuForm, action } = this;
-          const params = { ...addMenuForm, action };
+          let { operateForm, action } = this;
+          const params = { ...operateForm, action };
           delete params.children;
           let { msg } = await this.$api.menuSubmit(params);
           this.showDialog = false;
@@ -286,12 +286,11 @@ export default {
       this.showDialog = true;
       this.action = "edit";
       this.$nextTick(() => {
-        Object.assign(this.addMenuForm, row);
-        console.log(this.addMenuForm)
+        Object.assign(this.operateForm, row);
       });
     },
     //删除
-    async handleDel(_id) {
+    async handleDel({ _id }) {
       let { msg } = await this.$api.menuDel({ _id });
       this.$message.success(msg);
       this.getTableData();

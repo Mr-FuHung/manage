@@ -32,10 +32,16 @@ const apis = {
         url: "/users/delete",
         data
     }),
-    //角色列表
-    getRoleList: () => $ajax({
+    //全部角色列表
+    getRoleAllList: () => $ajax({
         mock: true,
         url: "/roles/allList",
+    }),
+    //角色列表
+    getRoleList: data => $ajax({
+        mock:true,
+        url: "/roles/list",
+        data
     }),
     //部门列表
     getDeptList: () => $ajax({
@@ -59,7 +65,20 @@ const apis = {
         method: "delete",
         url: "/menu/delete",
         data
+    }),
+    //新增角色
+    roleSubmit:data=>$ajax({
+        mock: true,
+        method:'post',
+        url:'/roles/operate',
+        data
+    }),
+    //删除角色
+    roleDelete:data=>$ajax({
+        mock: true,
+        method:'delete',
+        url:'/roles/delete',
+        data
     })
-
 }
 export default apis;

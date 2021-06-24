@@ -67,14 +67,14 @@
       <el-form
         ref="dialogUserForm"
         size="medium"
-        :model="addUserForm"
+        :model="operateForm"
         label-width="1.2rem"
         :rules="rules"
       >
         <el-form-item label="用户名" prop="userName">
           <el-input
             prefix-icon="el-icon-user"
-            v-model.trim="addUserForm.userName"
+            v-model.trim="operateForm.userName"
             :disabled="action === 'edit'"
             placeholder="请输入用户名称"
           />
@@ -82,11 +82,11 @@
         <el-form-item label="邮箱" prop="userEmail">
           <el-input
             prefix-icon="el-icon-message"
-            v-model.trim="addUserForm.userEmail"
+            v-model.trim="operateForm.userEmail"
             placeholder="请输入用户邮箱"
           >
             <template #append>
-              <el-select v-model="addUserForm.userEmailSuffix">
+              <el-select v-model="operateForm.userEmailSuffix">
                 <el-option label="@qq.com" value="@qq.com"></el-option>
                 <el-option label="@163.com" value="@163.com"></el-option>
               </el-select>
@@ -96,19 +96,19 @@
         <el-form-item label="手机号" prop="mobile">
           <el-input
             prefix-icon="el-icon-mobile-phone"
-            v-model.trim="addUserForm.mobile"
+            v-model.trim="operateForm.mobile"
             placeholder="请输入手机号"
           />
         </el-form-item>
         <el-form-item label="岗位" prop="job">
           <el-input
-            v-model="addUserForm.job"
+            v-model="operateForm.job"
             prefix-icon="el-icon-document"
             placeholder="请输入岗位"
           />
         </el-form-item>
         <el-form-item label="状态" prop="state">
-          <el-select v-model="addUserForm.state" placeholder="请选择活动区域">
+          <el-select v-model="operateForm.state" placeholder="请选择活动区域">
             <el-option label="在职" :value="1"></el-option>
             <el-option label="离职" :value="2"></el-option>
             <el-option label="试用期" :value="3"></el-option>
@@ -116,7 +116,7 @@
         </el-form-item>
         <el-form-item label="用户角色" prop="role">
           <el-select
-            v-model="addUserForm.role"
+            v-model="operateForm.role"
             placeholder="请选择用户角色"
             clearable
           >
@@ -127,7 +127,7 @@
         </el-form-item>
         <el-form-item label="系统角色" prop="roleList">
           <el-select
-            v-model="addUserForm.roleList"
+            v-model="operateForm.roleList"
             placeholder="请选择系统角色"
             clearable
             multiple
@@ -144,7 +144,7 @@
         <el-form-item label="部门" prop="deptId">
           <el-cascader
             style="width: 4rem"
-            v-model="addUserForm.deptId"
+            v-model="operateForm.deptId"
             placeholder="请选择所属部门"
             :options="deptList"
             :props="{ checkStrictly: true, value: '_id', label: 'deptName' }"
@@ -251,7 +251,7 @@ export default {
     //用户列表多选数量
     const checkedUsersId = ref([]);
     //新增弹窗表单
-    const addUserForm = reactive({
+    const operateForm = reactive({
       userEmailSuffix: "@qq.com",
       state: 3,
       role: 2,
@@ -299,7 +299,7 @@ export default {
     onMounted(() => {
       //获取表格数据
       getUserList();
-      getRoleList();
+      getRoleAllList();
       getDeptList();
     });
     //获取列表
@@ -372,8 +372,8 @@ export default {
       showDialog.value = true;
     };
     //角色列表
-    const getRoleList = () => {
-      ctx.$api.getRoleList().then((list) => {
+    const getRoleAllList = () => {
+      ctx.$api.getRoleAllList().then((list) => {
         roleList.value = list.data;
       });
     };
@@ -393,7 +393,7 @@ export default {
       ctx.$refs.dialogUserForm.validate(async (valid) => {
         //验证表单是否rules符合验证规则
         if (valid) {
-          let params = Object.assign({}, toRaw(addUserForm)); //转为普通对象
+          let params = Object.assign({}, toRaw(operateForm)); //转为普通对象
           params.userEmail += params.userEmailSuffix;
           delete params.userEmailSuffix;
           params.action = action.value;
@@ -413,7 +413,7 @@ export default {
       action.value = "edit";
       let email = row.userEmail.split("@");
       ctx.$nextTick(() => {
-        Object.assign(addUserForm, row, {
+        Object.assign(operateForm, row, {
           userEmailSuffix: `@${email[1]}`,
           userEmail: email[0],
         });
@@ -428,7 +428,7 @@ export default {
       pages,
       showDialog,
       rules,
-      addUserForm,
+      operateForm,
       deptList,
       roleList,
       checkedUsersId,

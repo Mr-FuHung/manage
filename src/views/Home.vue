@@ -60,7 +60,7 @@
         <router-view></router-view>
       </el-main>
       <!-- 页脚 -->
-      <el-footer>Footer</el-footer>
+      <el-footer>暂未备案</el-footer>
     </el-container>
   </el-container>
 </template>
@@ -127,6 +127,9 @@ export default {
   // background-color: #2D97CC;
   color: #333;
   line-height: 0.6rem;
+}
+.el-footer{
+  text-align: center;
 }
 .el-header {
   border-bottom: 1px solid #ccc;
