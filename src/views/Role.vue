@@ -27,7 +27,9 @@
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button @click="handleEdit(scope.row)"> 编辑 </el-button>
-            <el-button type="primary"> 配置权限 </el-button>
+            <el-button type="primary" @click="handlePermission(scope.row)">
+              权限配置
+            </el-button>
             <el-button type="danger" @click="handleDel(scope.row)">
               删除
             </el-button>
@@ -40,6 +42,8 @@
         layout="prev, pager, next, sizes"
         :page-sizes="[10, 20, 50, 100]"
         :total="pages.total"
+        :page-size="pages.pageSize"
+        :current-page="pages.pageNum"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
@@ -77,6 +81,33 @@
       </template>
     </el-dialog>
     <!-- 新增弹窗结束 -->
+    <!-- 权限弹窗开始 -->
+    <el-dialog title="权限配置" v-model="showPermission">
+      <el-form size="medium" label-width="1.2rem">
+        <el-form-item label="角色名称">
+          {{ permission.curRoleName }}
+        </el-form-item>
+        <el-form-item label="选择权限">
+          <el-tree
+            ref="permissionTree"
+            :data="menuList"
+            show-checkbox
+            node-key="_id"
+            default-expand-all
+            :props="{ label: 'menuName' }"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showPermission = false">取 消</el-button>
+          <el-button type="primary" @click="handlePermissionSubmit"
+            >确 定</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
+    <!-- 权限弹窗结束 -->
   </div>
 </template>
 
@@ -95,6 +126,13 @@ export default {
       queryForm: {
         roleName: "",
       },
+      //权限配置
+      showPermission: false,
+      permission: {
+        curRoleName: "",
+        _id: "",
+      },
+      menuList: [],
       //新增
       showDialog: false,
       operateForm: {},
@@ -108,12 +146,13 @@ export default {
           {
             min: 2,
             max: 8,
-            message: "菜单名称长度在2-8个字符之间",
+            message: "角色名称长度在2-8个字符之间",
             trigger: ["blur", "change"],
           },
         ],
       },
       //表格
+      permissionMapping: {},
       tableHeaderData: [
         {
           label: "角色名称",
@@ -127,14 +166,13 @@ export default {
         },
         {
           label: "权限列表",
-          prop: "menuType",
+          prop: "permissionList",
           width: 180,
-          // formatter(row, column, value) {
-          //   return {
-          //     1: "菜单",
-          //     2: "按钮",
-          //   }[value];
-          // },
+          formatter: (row, column, value) => {
+            return value.halfCheckedKeys
+              .map((val) => this.permissionMapping[val])
+              .join(",");
+          },
         },
         {
           label: "创建时间",
@@ -151,24 +189,45 @@ export default {
         pageSize: 10,
         pageNum: 1,
       },
-      //新增或修改
     };
   },
   mounted() {
     this.getTableData();
+    this.getMenuList();
   },
   methods: {
     async getTableData() {
       const { list, page } = await this.$api
-        .getRoleList(this.queryForm)
+        .getRoleList({ ...this.queryForm, ...this.pages })
         .then((result) => result.data);
       this.tableData = list;
       this.pages.total = page.total;
     },
-    handleCurrentChange() {
+    async getMenuList() {
+      const { data } = await this.$api.getMenuList();
+      this.deepRermissionMapping(data);
+      this.menuList = data;
+    },
+    //递归 获取菜单mapping
+    deepRermissionMapping(data) {
+      const mapping = {};
+      const deep = (data) => {
+        data.forEach((item) => {
+          mapping[item._id] = item.menuName;
+          if (item.children) {
+            deep(item.children);
+          }
+        });
+      };
+      deep(data);
+      this.permissionMapping = mapping;
+    },
+    handleCurrentChange(current) {
+      this.pages.pageNum = current;
       this.getTableData();
     },
-    handleSizeChange() {
+    handleSizeChange(val) {
+      this.pages.pageSize = val;
       this.getTableData();
     },
     //重置
@@ -195,7 +254,11 @@ export default {
       this.action = "edit";
       this.showDialog = true;
       this.$nextTick(() => {
-        Object.assign(this.operateForm, row);
+        Object.assign(this.operateForm, {
+          roleName: row.roleName,
+          remark: row.remark,
+          _id: row._id,
+        });
       });
     },
     //提交
@@ -212,6 +275,42 @@ export default {
           this.getTableData();
         }
       });
+    },
+    //打开权限配置弹窗
+    async handlePermission(row) {
+      this.permission.curRoleName = row.roleName;
+      this.permission._id = row._id;
+      this.showPermission = true;
+      const { checkedKeys } = row.permissionList;
+      await this.$nextTick();
+      this.$refs.permissionTree.setCheckedKeys(checkedKeys);
+    },
+    //权限配置提交
+    async handlePermissionSubmit() {
+      let nodes = this.$refs.permissionTree.getCheckedNodes();
+      let halfCheckedNodes = this.$refs.permissionTree.getHalfCheckedNodes();
+      let checkedKeys = [];
+      let halfCheckedKeys = [];
+      nodes.forEach((item) => {
+        if (item.children && item.parentId[0] !== null) {
+          halfCheckedKeys.push(item._id);
+        } else {
+          checkedKeys.push(item._id);
+        }
+      });
+      halfCheckedNodes.forEach((item) => {
+        if (item.parentId[0] !== null) {
+          halfCheckedKeys.push(item._id);
+        }
+      });
+      let params = {
+        _id: this.permission._id,
+        permissionList: { halfCheckedKeys, checkedKeys },
+      };
+      const { msg } = await this.$api.roleUpdatePermission(params);
+      this.showPermission = false;
+      this.$message.success(msg);
+      this.getTableData();
     },
   },
 };

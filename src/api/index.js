@@ -34,12 +34,10 @@ const apis = {
     }),
     //全部角色列表
     getRoleAllList: () => $ajax({
-        mock: true,
         url: "/roles/allList",
     }),
     //角色列表
     getRoleList: data => $ajax({
-        mock:true,
         url: "/roles/list",
         data
     }),
@@ -66,18 +64,22 @@ const apis = {
         url: "/menu/delete",
         data
     }),
-    //新增角色
+    //新增，修改角色
     roleSubmit:data=>$ajax({
-        mock: true,
         method:'post',
         url:'/roles/operate',
         data
     }),
     //删除角色
     roleDelete:data=>$ajax({
-        mock: true,
         method:'delete',
         url:'/roles/delete',
+        data
+    }),
+    //角色权限配置
+    roleUpdatePermission:data=>$ajax({
+        method:'post',
+        url:'/roles/update/permission',
         data
     })
 }

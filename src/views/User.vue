@@ -57,6 +57,8 @@
         layout="prev, pager, next, sizes"
         :page-sizes="[10, 20, 50, 100]"
         :total="pages.total"
+        :page-size="pages.pageSize"
+        :current-page='pages.pageNum'
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
