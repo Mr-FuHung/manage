@@ -11,6 +11,10 @@ const apis = {
         method: "post",
         data,
     }),
+    //全量用户列表
+    getAllUserList: () => $ajax({
+        url: "/users/all/list"
+    }),
     //用户列表
     getUserList: data => $ajax({
         url: "/users/list",
@@ -42,9 +46,9 @@ const apis = {
         data
     }),
     //部门列表
-    getDeptList: () => $ajax({
-        mock: true,
+    getDeptList: data => $ajax({
         url: "/dept/list",
+        data
     }),
     //新增,修改用户
     userSubmit: (data) => $ajax({
@@ -65,21 +69,33 @@ const apis = {
         data
     }),
     //新增，修改角色
-    roleSubmit:data=>$ajax({
-        method:'post',
-        url:'/roles/operate',
+    roleSubmit: data => $ajax({
+        method: 'post',
+        url: '/roles/operate',
         data
     }),
     //删除角色
-    roleDelete:data=>$ajax({
-        method:'delete',
-        url:'/roles/delete',
+    roleDelete: data => $ajax({
+        method: 'delete',
+        url: '/roles/delete',
         data
     }),
     //角色权限配置
-    roleUpdatePermission:data=>$ajax({
+    roleUpdatePermission: data => $ajax({
+        method: 'post',
+        url: '/roles/update/permission',
+        data
+    }),
+    //部门新增修改
+    deptSubmit:data=>$ajax({
         method:'post',
-        url:'/roles/update/permission',
+        url:'/dept/operate',
+        data
+    }),
+    //部门删除
+    deptDel:data=>$ajax({
+        method:'delete',
+        url:'/dept/delete',
         data
     })
 }

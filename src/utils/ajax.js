@@ -67,12 +67,8 @@ function ajax(options) {
     }
     return instance(options);
 }
-['get', 'post', 'put', 'delete', 'patch'].forEach(item => {
-    ajax[item] = (url, data, options) => {//兼容多种请求方式，将多种请求写法转为同一种
-        return ajax({
-            method: item,
-            url, data, ...options
-        })
-    }
-})
+['get', 'post', 'put', 'delete', 'patch'].forEach(item => ajax[item] = (url, data, options) => ajax({
+    method: item,
+    url, data, ...options
+}))
 export default ajax;

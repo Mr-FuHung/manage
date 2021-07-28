@@ -31,6 +31,8 @@
         size="medium"
         :data="tableData"
         row-key="_id"
+        highlight-current-row
+        :indent='60'
         :tree-props="{ children: 'children' }"
       >
         <el-table-column
@@ -55,7 +57,7 @@
     </div>
 
     <!-- 新增弹窗开始 -->
-    <el-dialog title="新增用户" v-model="showDialog">
+    <el-dialog title="新增菜单" v-model="showDialog">
       <el-form
         ref="dialogMenuForm"
         size="medium"

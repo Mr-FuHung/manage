@@ -84,7 +84,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$route);
     this.getNoticeCount();
     this.getMenuList();
   },
