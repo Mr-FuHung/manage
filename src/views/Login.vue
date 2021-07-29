@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import utils from "@/utils/utils.js";
 export default {
   name: "Login",
   data() {
@@ -69,13 +70,26 @@ export default {
     login() {
       this.$refs.userForm.validate((valid) => {
         //验证表单是否rules符合验证规则
-
         if (valid) {
-          this.$api.login(this.user).then((result) => {
-            this.$store.commit("saveUserInfo", result.data);
+          this.$api.login(this.user).then(async ({ data, msg }) => {
+            this.$store.commit("saveUserInfo", data);
+            this.$message.success(msg);
+            let {
+              data: { menuList },
+            } = await this.$api.getPermissionList();
+            this.asyncLoadRoutes(menuList);
             this.$router.push("/");
           });
         }
+      });
+    },
+    asyncLoadRoutes(menuList) {
+      //生成由权限
+      let routes = utils.generateRoutes(menuList);
+      routes.forEach((menus) => {
+        let url = `./../views/${menus.component}.vue`;
+        menus.component = () => import(url);
+        this.$router.addRoute("home", menus);
       });
     },
   },

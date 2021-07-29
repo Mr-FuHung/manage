@@ -100,10 +100,12 @@ export default {
       this.noticeCount = data;
     },
     async getMenuList() {
-      let { data:{ menuList,buttonList } } = await this.$api.getPermissionList();
+      let {
+        data: { menuList, buttonList },
+      } = await this.$api.getPermissionList();
       this.userMenu = menuList;
-      this.$store.commit('saveMenuInfo',menuList)
-      this.$store.commit('saveButtonInfo',buttonList)
+      this.$store.commit("saveMenuInfo", menuList);
+      this.$store.commit("saveButtonInfo", buttonList);
     },
     toggle() {
       this.isCollapse = !this.isCollapse;
@@ -129,7 +131,7 @@ export default {
   color: #333;
   line-height: 0.6rem;
 }
-.el-footer{
+.el-footer {
   text-align: center;
 }
 .el-header {

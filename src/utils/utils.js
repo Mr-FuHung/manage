@@ -24,5 +24,25 @@ export default {
         }
 
         return rule;
-    }
+    },
+    generateRoutes(menuList) {
+        //拼接动态路由
+        let routes = [];
+        menuList.forEach((menus) => {
+          if (menus.parentId[0] && menus.menuType == 1) {
+            routes.push({
+              name: menus.component,
+              path: menus.path,
+              meta: {
+                title: menus.menuName,
+              },
+              component: menus.component,
+            });
+          }
+          if (menus.children && menus.children.length) {
+            return (routes = routes.concat(this.generateRoutes(menus.children)));
+          }
+        });
+        return routes;
+      }
 }
