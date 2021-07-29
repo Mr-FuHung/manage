@@ -97,6 +97,10 @@ const apis = {
         method:'delete',
         url:'/dept/delete',
         data
+    }),
+    getPermissionList:()=>$ajax({
+        method:'post',
+        url:'/users/permissionList'
     })
 }
 export default apis;

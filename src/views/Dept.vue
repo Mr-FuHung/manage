@@ -13,7 +13,7 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd"> 创建 </el-button>
+        <el-button type="primary" @click="handleAdd" v-permission:dept-add> 新增 </el-button>
       </div>
 
       <el-table
@@ -33,10 +33,10 @@
         />
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button @click="handleEdit(scope.row)" type="primary">
+            <el-button @click="handleEdit(scope.row)" type="primary" v-permission:dept-edit>
               编辑
             </el-button>
-            <el-button type="danger" @click="handleDel(scope.row)">
+            <el-button type="danger" @click="handleDel(scope.row)" v-permission:dept-delete>
               删除
             </el-button>
           </template>

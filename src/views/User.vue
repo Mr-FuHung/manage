@@ -24,13 +24,14 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button @click="handleAdd"> 新增 </el-button>
-        <el-button type="danger" @click="handlePatchDel"> 批量删除 </el-button>
+        <el-button type="primary" @click="handleAdd" v-permission:user-add> 新增 </el-button>
+        <el-button type="danger" @click="handlePatchDel" v-permission:user-batch-delete> 批量删除 </el-button>
       </div>
 
       <el-table
         stripe
         size="medium"
+        
         :data="tableData"
         @selection-change="handleSelectionChange"
       >
@@ -44,8 +45,8 @@
         />
         <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button @click="handleEdit(scope.row)"> 编辑 </el-button>
-            <el-button type="danger" @click="handleDel(scope.row)">
+            <el-button @click="handleEdit(scope.row)" v-permission:user-edit> 编辑 </el-button>
+            <el-button type="danger" @click="handleDel(scope.row)"  v-permission:user-delete>
               删除
             </el-button>
           </template>
@@ -116,10 +117,10 @@
             <el-option label="试用期" :value="3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="用户角色" prop="role">
+        <el-form-item label="系统角色" prop="systemRole">
           <el-select
-            v-model="operateForm.role"
-            placeholder="请选择用户角色"
+            v-model="operateForm.systemRole"
+            placeholder="请选择系统角色"
             clearable
           >
             <el-option label="超级管理员" :value="0" />
@@ -127,10 +128,10 @@
             <el-option label="普通用户" :value="2" />
           </el-select>
         </el-form-item>
-        <el-form-item label="系统角色" prop="roleList">
+        <el-form-item label="用户角色" prop="userRole">
           <el-select
-            v-model="operateForm.roleList"
-            placeholder="请选择系统角色"
+            v-model="operateForm.userRole"
+            placeholder="请选择用户角色"
             clearable
             multiple
             style="width: 100%"
@@ -199,7 +200,7 @@ export default {
       },
       {
         label: "系统角色",
-        prop: "role",
+        prop: "systemRole",
         width: 180,
         formatter(row, column, value) {
           return {
@@ -256,7 +257,7 @@ export default {
     const operateForm = reactive({
       userEmailSuffix: "@qq.com",
       state: 3,
-      role: 2,
+      systemRole: 2,
     });
     //新增弹窗表单验证规则
     const rules = reactive({

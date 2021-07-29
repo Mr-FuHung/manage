@@ -100,8 +100,10 @@ export default {
       this.noticeCount = data;
     },
     async getMenuList() {
-      let { data } = await this.$api.getMenuList();
-      this.userMenu = data;
+      let { data:{ menuList,buttonList } } = await this.$api.getPermissionList();
+      this.userMenu = menuList;
+      this.$store.commit('saveMenuInfo',menuList)
+      this.$store.commit('saveButtonInfo',buttonList)
     },
     toggle() {
       this.isCollapse = !this.isCollapse;

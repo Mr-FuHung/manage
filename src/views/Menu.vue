@@ -11,6 +11,7 @@
             size="small"
             placeholder="请选择菜单状态"
           >
+            <el-option value="" label="全部"></el-option>
             <el-option :value="1" label="正常"></el-option>
             <el-option :value="2" label="停用"></el-option>
           </el-select>
@@ -23,16 +24,18 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd(1)"> 创建 </el-button>
+        <el-button type="primary" @click="handleAdd(1)" v-permission:menu-add>
+          新增
+        </el-button>
       </div>
 
       <el-table
-        stripe
         size="medium"
         :data="tableData"
         row-key="_id"
+        :row-class-name="tableRowClassName"
         highlight-current-row
-        :indent='60'
+        :indent="60"
         :tree-props="{ children: 'children' }"
       >
         <el-table-column
@@ -44,11 +47,21 @@
         />
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" @click="handleAdd(2, scope.row)">
+            <el-button
+              type="primary"
+              @click="handleAdd(2, scope.row)"
+              v-permission:menu-add-child
+            >
               新增子级
             </el-button>
-            <el-button @click="handleEdit(scope.row)"> 编辑 </el-button>
-            <el-button type="danger" @click="handleDel(scope.row)">
+            <el-button @click="handleEdit(scope.row)" v-permission:menu-edit>
+              编辑
+            </el-button>
+            <el-button
+              type="danger"
+              @click="handleDel(scope.row)"
+              v-permission:menu-delete
+            >
               删除
             </el-button>
           </template>
@@ -153,7 +166,7 @@ export default {
     return {
       //查询条件
       queryForm: {
-        menuState: 1,
+        menuState: "",
       },
       //新增
       showDialog: false,
@@ -244,6 +257,12 @@ export default {
     this.getTableData();
   },
   methods: {
+    tableRowClassName({ row, rowIndex }) {
+      if (row.menuState === 2) {
+        return "disable";
+      } 
+      return "";
+    },
     getTableData() {
       this.$api.getMenuList(this.queryForm).then((list) => {
         this.tableData = list.data;
@@ -307,5 +326,8 @@ export default {
 }
 .el-dialog .el-select .el-input {
   width: 130px;
+}
+.el-table .disable {
+  background-color: #ff848438!important;
 }
 </style>
