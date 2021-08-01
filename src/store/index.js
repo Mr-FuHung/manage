@@ -11,6 +11,7 @@ const state = {
     userInfo: storage.getItem('userInfo') || {},//获取用户信息
     menuList: storage.getItem('menuList') || [],//菜单权限列表
     buttonList: storage.getItem('buttonList') || [],//按钮权限列表
+    noticeCount:0//待处理数据量
 }
 
 export default createStore({

@@ -16,5 +16,8 @@ export default {
     saveButtonInfo(state, buttonList) {
         state.buttonList = buttonList;//存储用户信息
         storage.setItem('buttonList', buttonList)//存储在storage，防止页面被刷新
+    },
+    saveNoticeCount(state, noticeCount) {
+        state.noticeCount = noticeCount;//存储
     }
 }

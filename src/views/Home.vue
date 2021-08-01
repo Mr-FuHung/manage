@@ -35,7 +35,12 @@
           </el-col>
           <!-- 角色 -->
           <el-col :md="{ span: 3, offset: 2 }" class="self">
-            <el-badge :is-dot="!!noticeCount" class="notice" type="danger">
+            <el-badge
+              :value="noticeCount"
+              :hidden="!noticeCount"
+              class="notice"
+              type="danger"
+            >
               <i class="el-icon-bell"></i>
             </el-badge>
             <!-- 下拉菜单 -->
@@ -78,10 +83,14 @@ export default {
     return {
       userInfo: this.$store.state.userInfo,
       isCollapse: false,
-      noticeCount: 0,
       userMenu: [],
       activeMenu: this.$route.path, //获取路由地址
     };
+  },
+  computed: {
+    noticeCount() {
+      return this.$store.state.noticeCount;
+    },
   },
   mounted() {
     this.getNoticeCount();
@@ -97,7 +106,7 @@ export default {
     },
     async getNoticeCount() {
       let { data } = await this.$api.getNoticeCount();
-      this.noticeCount = data;
+      this.$store.commit("saveNoticeCount", data);
     },
     async getMenuList() {
       let {

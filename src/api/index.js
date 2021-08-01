@@ -27,7 +27,6 @@ const apis = {
     }),
     //待办事项
     getNoticeCount: () => $ajax({
-        mock: true,
         url: "/leave/count",
     }),
     //删除
@@ -87,20 +86,44 @@ const apis = {
         data
     }),
     //部门新增修改
-    deptSubmit:data=>$ajax({
-        method:'post',
-        url:'/dept/operate',
+    deptSubmit: data => $ajax({
+        method: 'post',
+        url: '/dept/operate',
         data
     }),
     //部门删除
-    deptDel:data=>$ajax({
-        method:'delete',
-        url:'/dept/delete',
+    deptDel: data => $ajax({
+        method: 'delete',
+        url: '/dept/delete',
         data
     }),
-    getPermissionList:()=>$ajax({
-        method:'post',
-        url:'/users/permissionList'
+    //获取权限列表
+    getPermissionList: () => $ajax({
+        method: 'post',
+        url: '/users/permissionList'
+    }),
+    //获取休假申请列表
+    getLeaveList: data => $ajax({
+        url: '/leave/list',
+        data
+    }),
+    //休假申请新增
+    leaveOperate: data => $ajax({
+        method: 'post',
+        url: '/leave/operate',
+        data
+    }),
+    //休假申请作废
+    leaveDel: data => $ajax({
+        method: 'delete',
+        url: '/leave/delete',
+        data
+    }),
+    //休假申请  审核操作
+    leaveApprove: data => $ajax({
+        method: 'post',
+        url: '/leave/approve',
+        data
     })
 }
 export default apis;
