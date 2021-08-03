@@ -2,8 +2,10 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 // createWebHashHistory  以#的路由
 import Home from '@/views/Home.vue';
 import storage from '@/utils/storage';
+import store from '@/store/index.js';
 // import $api from '@/api'
 import utils from "@/utils/utils.js";
+
 const routes = [
     {
         name: 'home',
@@ -21,6 +23,68 @@ const routes = [
                     title: '欢迎页'
                 },
                 component: () => import('@/views/Welcome.vue'),
+            },
+            {
+                name: 'system',
+                path: '/system',
+                meta: {
+                    title: '系统管理'
+                }
+            },
+            {
+                name: 'user',
+                path: '/system/user',
+                meta: {
+                    title: '用户管理'
+                },
+                component: () => import('@/views/User.vue'),
+            },
+            {
+                name: 'menu',
+                path: '/system/menu',
+                meta: {
+                    title: '菜单管理'
+                },
+                component: () => import('@/views/Menu.vue'),
+            },
+            {
+                name: 'role',
+                path: '/system/role',
+                meta: {
+                    title: '角色管理'
+                },
+                component: () => import('@/views/Role.vue'),
+            },
+            {
+                name: 'dept',
+                path: '/system/dept',
+                meta: {
+                    title: '部门管理'
+                },
+                component: () => import('@/views/Dept.vue'),
+            },
+            {
+                name: 'audit',
+                path: '/audit',
+                meta: {
+                    title: '审批管理'
+                }
+            },
+            {
+                name: 'leave',
+                path: '/audit/leave',
+                meta: {
+                    title: '休假申请'
+                },
+                component: () => import('@/views/Leave.vue'),
+            },
+            {
+                name: 'approve',
+                path: '/audit/approve',
+                meta: {
+                    title: '待审批'
+                },
+                component: () => import('@/views/Approve.vue'),
             }
         ]
     },
@@ -50,22 +114,23 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes
 })
+
+const routesList=['404','login','welcome','home']
 function asyncLoadRoutes() {//拉起路由权限
-    
     let menuList = storage.getItem('menuList') || [];
     let routes = utils.generateRoutes(menuList);
     routes.forEach(menus => {
-        let url = `./../views/${menus.component}.vue`;
-        menus.component = () => import(url)
-        router.addRoute('home', menus)
+    //     let url = `./../views/${menus.component}.vue`;
+    //     menus.component = () => import(url)
+        // router.addRoute('home', menus)
+        routesList.push(menus.name.toLocaleLowerCase())
     })
-
+    store.commit('saveRoutesList',routesList)
 }
 asyncLoadRoutes();
-
 //全局守卫
 router.beforeEach((to, from, next) => {
-    if (router.hasRoute(to.name)) {//验证路径是否存在
+    if (store.state.routesList.includes(to.name)) {//验证路径是否存在
         document.title = to.meta.title;//修改页面title
         next()
     } else {

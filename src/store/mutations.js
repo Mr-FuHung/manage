@@ -17,6 +17,11 @@ export default {
         state.buttonList = buttonList;//存储用户信息
         storage.setItem('buttonList', buttonList)//存储在storage，防止页面被刷新
     },
+    saveRoutesList(state, routesList) {
+        let list = [...new Set(state.routesList.concat(routesList))]
+        state.routesList = list;//存储用户信息
+        storage.setItem('routesList', list)//存储在storage，防止页面被刷新
+    },
     saveNoticeCount(state, noticeCount) {
         state.noticeCount = noticeCount;//存储
     }
