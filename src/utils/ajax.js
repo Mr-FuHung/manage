@@ -7,10 +7,9 @@ import config from '@/config';
 import { ElMessage } from 'element-plus';
 import router from '@/routes';
 import storage from '@/utils/storage';
-
 const NETWORK_ERROR = '网络请求异常';
 const instance = axios.create({
-    // baseURL: config.mock ? config.mockApi : config.baseApi,
+    baseURL: config.mock ? config.mockApi : config.baseApi,
     timeout: 8000,
     headers: {
         "Content-Type": "application/json"

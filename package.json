@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite --mode dev",
     "test": "vite --mode test",
-    "build": "vite build",
+    "build": "vite build  --mode prod",
     "serve": "vite preview"
   },
   "dependencies": {
