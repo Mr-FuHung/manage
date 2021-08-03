@@ -38,6 +38,7 @@
                 scope.row.currentAuditUser == userInfo.userName &&
                 [1, 2].includes(scope.row.auditState)
               "
+              v-permission:approve-edit
             >
               审核
             </el-button>
