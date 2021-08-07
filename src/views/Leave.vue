@@ -20,7 +20,9 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd" v-permission:leave-add> 申请休假 </el-button>
+        <el-button type="primary" @click="handleAdd" v-permission:leave-add>
+          申请休假
+        </el-button>
       </div>
 
       <el-table stripe size="medium" :data="tableData">
@@ -34,15 +36,27 @@
         />
         <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button @click="handleDetail(scope.row)" v-permission:leave-detail> 详情 </el-button>
             <el-button
-              type="danger"
-              @click="handleDel(scope.row._id)"
-              v-if="scope.row.auditState <= 2"
-              v-permission:leave-delete
+              @click="handleDetail(scope.row)"
+              v-permission:leave-detail
             >
-              作废
+              详情
             </el-button>
+
+            <el-popconfirm
+              confirmButtonText="确定"
+              cancelButtonText="取消"
+              iconColor="red"
+              title="确定要作废吗？"
+              v-if="scope.row.auditState <= 2"
+              @confirm="handleDel(scope.row._id)"
+            >
+              <template #reference>
+                <el-button type="danger" v-permission:leave-delete>
+                  作废
+                </el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>

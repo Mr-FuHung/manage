@@ -24,14 +24,21 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd" v-permission:user-add> 新增 </el-button>
-        <el-button type="danger" @click="handlePatchDel" v-permission:user-batch-delete> 批量删除 </el-button>
+        <el-button type="primary" @click="handleAdd" v-permission:user-add>
+          新增
+        </el-button>
+        <el-button
+          type="danger"
+          @click="handlePatchDel"
+          v-permission:user-batch-delete
+        >
+          批量删除
+        </el-button>
       </div>
 
       <el-table
         stripe
         size="medium"
-        
         :data="tableData"
         @selection-change="handleSelectionChange"
       >
@@ -45,10 +52,22 @@
         />
         <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button @click="handleEdit(scope.row)" v-permission:user-edit> 编辑 </el-button>
-            <el-button type="danger" @click="handleDel(scope.row)"  v-permission:user-delete>
-              删除
+            <el-button @click="handleEdit(scope.row)" v-permission:user-edit>
+              编辑
             </el-button>
+            <el-popconfirm
+              confirmButtonText="确定"
+              cancelButtonText="取消"
+              iconColor="red"
+              title="确定要删除吗？"
+              @confirm="handleDel(scope.row)"
+            >
+              <template #reference>
+                <el-button type="danger" v-permission:user-delete>
+                  删除
+                </el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -59,7 +78,7 @@
         :page-sizes="[10, 20, 50, 100]"
         :total="pages.total"
         :page-size="pages.pageSize"
-        :current-page='pages.pageNum'
+        :current-page="pages.pageNum"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />

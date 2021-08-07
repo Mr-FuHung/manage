@@ -13,7 +13,9 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd" v-permission:role-add> 新增 </el-button>
+        <el-button type="primary" @click="handleAdd" v-permission:role-add>
+          新增
+        </el-button>
       </div>
 
       <el-table stripe size="medium" :data="tableData">
@@ -26,13 +28,29 @@
         />
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button @click="handleEdit(scope.row)" v-permission:role-edit> 编辑 </el-button>
-            <el-button type="primary" @click="handlePermission(scope.row)" v-permission:role-permission>
+            <el-button @click="handleEdit(scope.row)" v-permission:role-edit>
+              编辑
+            </el-button>
+            <el-button
+              type="primary"
+              @click="handlePermission(scope.row)"
+              v-permission:role-permission
+            >
               权限配置
             </el-button>
-            <el-button type="danger" @click="handleDel(scope.row)" v-permission:role-delete>
-              删除
-            </el-button>
+            <el-popconfirm
+              confirmButtonText="确定"
+              cancelButtonText="取消"
+              iconColor="red"
+              title="确定要删除吗？"
+              @confirm="handleDel(scope.row)"
+            >
+              <template #reference>
+                <el-button type="danger" v-permission:role-delete>
+                  删除
+                </el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -213,7 +231,6 @@ export default {
       const mapping = {};
       const deep = (data) => {
         data.forEach((item) => {
-          
           mapping[item._id] = item.menuName;
           if (item.children) {
             deep(item.children);

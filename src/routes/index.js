@@ -85,6 +85,37 @@ const routes = [
                     title: '待审批'
                 },
                 component: () => import('@/views/Approve.vue'),
+            },
+            {
+                name: 'blog',
+                path: '/blog',
+                meta: {
+                    title: '博客管理'
+                }
+            },
+            {
+                name: 'article',
+                path: '/blog/article',
+                meta: {
+                    title: '博客文章管理'
+                },
+                component: () => import('@/views/Article.vue'),
+            },
+            {
+                name: 'comment',
+                path: '/blog/comment',
+                meta: {
+                    title: '博客留言管理'
+                },
+                component: () => import('@/views/Comment.vue'),
+            },
+            {
+                name: 'bloguser',
+                path: '/blog/blogUser',
+                meta: {
+                    title: '博客用户管理'
+                },
+                component: () => import('@/views/BlogUser.vue'),
             }
         ]
     },
@@ -115,17 +146,17 @@ const router = createRouter({
     routes
 })
 
-const routesList=['404','login','welcome','home']
+const routesList = ['404', 'login', 'welcome', 'home']
 function asyncLoadRoutes() {//拉起路由权限
     let menuList = storage.getItem('menuList') || [];
     let routes = utils.generateRoutes(menuList);
     routes.forEach(menus => {
-    //     let url = `./../views/${menus.component}.vue`;
-    //     menus.component = () => import(url)
+        //     let url = `./../views/${menus.component}.vue`;
+        //     menus.component = () => import(url)
         // router.addRoute('home', menus)
-        routesList.push(menus.name.toLocaleLowerCase())
+        menus.name && routesList.push(menus.name.toLocaleLowerCase());
     })
-    store.commit('saveRoutesList',routesList)
+    store.commit('saveRoutesList', routesList)
 }
 asyncLoadRoutes();
 //全局守卫

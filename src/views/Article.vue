@@ -2,8 +2,18 @@
   <div class="dept-mangn">
     <div class="query-form">
       <el-form inline :model="queryForm" ref="form">
-        <el-form-item label="部门名称" prop="deptName">
-          <el-input v-model="queryForm.deptName" placeholder="请输入部门名称" />
+        <el-form-item label="文章标题" prop="title">
+          <el-input v-model="queryForm.title" placeholder="请输入文章标题" />
+        </el-form-item>
+        <el-form-item label="作者" prop="userName">
+          <el-input v-model="queryForm.userName" placeholder="请输入作者名称" />
+        </el-form-item>
+        <el-form-item label="文章状态" prop="state">
+          <el-select v-model="queryForm.state" size="small">
+            <el-option value="" label="全部"></el-option>
+            <el-option :value="1" label="公开"></el-option>
+            <el-option :value="2" label="隐藏"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getTableData">查询</el-button>
@@ -18,16 +28,7 @@
         </el-button>
       </div>
 
-      <el-table
-        stripe
-        size="medium"
-        :data="tableData"
-        row-key="_id"
-        default-expand-all
-        highlight-current-row
-        :indent="60"
-        :tree-props="{ children: 'children' }"
-      >
+      <el-table stripe size="medium" :data="tableData">
         <el-table-column
           v-for="item in tableHeaderData"
           :key="item.prop"
@@ -127,11 +128,13 @@
 <script>
 import utils from "@/utils/utils.js";
 export default {
-  name: "Dept",
+  name: "Article",
   data() {
     return {
       //查询条件
-      queryForm: {},
+      queryForm: {
+        state: "",
+      },
       //新增
       showDialog: false,
       operateForm: {
@@ -171,14 +174,35 @@ export default {
       //表格
       tableHeaderData: [
         {
-          label: "部门名称",
-          prop: "deptName",
+          label: "文章ID",
+          prop: "articleId",
           // width: 300,
         },
         {
-          label: "负责人",
-          prop: "userName",
+          label: "作者",
+          prop: "author.userName",
           // width: 180,
+        },
+        {
+          label: "标题",
+          prop: "title",
+          // width: 180,
+        },
+        {
+          label: "描述",
+          prop: "desc",
+          // width: 180,
+        },
+        {
+          label: "文章状态",
+          prop: "state",
+          // width: 180,
+          formatter(row, column, value) {
+            return {
+              1: "公开",
+              2: "隐藏",
+            }[value];
+          },
         },
         {
           label: "更新时间",
@@ -204,7 +228,7 @@ export default {
   },
   mounted() {
     this.getTableData();
-    this.getAllUserList();
+    // this.getAllUserList();
   },
   methods: {
     handleUser(val) {
@@ -212,10 +236,12 @@ export default {
       Object.assign(this.operateForm, { userId, userEmail, userName });
     },
     async getTableData() {
-      let { data } = await this.$api.getDeptList({
+      let {
+        data: { list },
+      } = await this.$api.getArticleList({
         ...this.queryForm,
       });
-      this.tableData = data;
+      this.tableData = list;
     },
     async getAllUserList() {
       let { data } = await this.$api.getAllUserList();

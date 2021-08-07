@@ -125,7 +125,7 @@ import utils from "@/utils/utils.js";
 //toRaw 响应式对象 转为普通对象
 //getCurrentInstance  初始化一个实例，拿到vue3上下文的配置，ctx
 export default {
-  name: "Levae",
+  name: "Approve",
   setup() {
     const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
     //初始化查询选项

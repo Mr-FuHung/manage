@@ -85,12 +85,12 @@ export default {
     },
     asyncLoadRoutes(menuList) {
       //生成由权限
-      const routesList =  this.$store.state.routesList;
+      const routesList = this.$store.state.routesList;
       let routes = utils.generateRoutes(menuList);
       routes.forEach((menus) => {
         // let url = `./../views/${menus.component}.vue`;
         // menus.component = () => import(url);
-        routesList.push(menus.name.toLocaleLowerCase());
+        menus.name && routesList.push(menus.name.toLocaleLowerCase());
         // this.$router.addRoute("home", menus);
       });
       this.$store.commit("saveRoutesList", routesList);

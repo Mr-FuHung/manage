@@ -124,6 +124,11 @@ const apis = {
         method: 'post',
         url: '/leave/approve',
         data
+    }),
+    //博客列表
+    getArticleList: data => $ajax({
+        url: '/article/list',
+        data
     })
 }
 export default apis;

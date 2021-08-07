@@ -57,13 +57,20 @@
             <el-button @click="handleEdit(scope.row)" v-permission:menu-edit>
               编辑
             </el-button>
-            <el-button
-              type="danger"
-              @click="handleDel(scope.row)"
-              v-permission:menu-delete
+
+            <el-popconfirm
+              confirmButtonText="确定"
+              cancelButtonText="取消"
+              iconColor="red"
+              title="确定要删除吗？"
+              @confirm="handleDel(scope.row)"
             >
-              删除
-            </el-button>
+              <template #reference>
+                <el-button type="danger" v-permission:menu-delete>
+                  删除
+                </el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -260,7 +267,7 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       if (row.menuState === 2) {
         return "disable";
-      } 
+      }
       return "";
     },
     getTableData() {
@@ -328,6 +335,6 @@ export default {
   width: 130px;
 }
 .el-table .disable {
-  background-color: #ff848438!important;
+  background-color: #ff848438 !important;
 }
 </style>
