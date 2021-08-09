@@ -4,7 +4,7 @@
 * */
 import $ajax from '@/utils/ajax';
 
-const apis = {
+const api = {
     //登录
     login: data => $ajax({
         url: "/users/login",
@@ -129,6 +129,30 @@ const apis = {
     getArticleList: data => $ajax({
         url: '/article/list',
         data
+    }),
+    //文件上传
+    uploadFile: data => $ajax({
+        method: 'post',
+        url: '/article/uploadFile',
+        data
+    }),
+    //文件上传
+    articleSubmit: data => $ajax({
+        method: 'post',
+        url: '/article/operate',
+        data
+    }),
+    //文件上传
+    removeFile: data => $ajax({
+        method: 'delete',
+        url: '/article/removeFile',
+        data
+    }),
+    //文章删除
+    articleDel: data => $ajax({
+        method: 'delete',
+        url: '/article/delete',
+        data
     })
 }
-export default apis;
+export default api;

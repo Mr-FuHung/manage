@@ -23,7 +23,7 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd" v-permission:dept-add>
+        <el-button type="primary" @click="handleAdd" v-permission:article-add>
           新增
         </el-button>
       </div>
@@ -38,8 +38,12 @@
           <template #default="scope">
             <el-button
               @click="handleEdit(scope.row)"
+              v-if="
+                scope.row.author.userId == userInfo.userId ||
+                userInfo.systemRole == 0
+              "
+              v-permission:article-edit
               type="primary"
-              v-permission:dept-edit
             >
               编辑
             </el-button>
@@ -48,10 +52,14 @@
               cancelButtonText="取消"
               iconColor="red"
               title="确定要删除吗？"
+              v-if="
+                scope.row.author.userId == userInfo.userId ||
+                userInfo.systemRole == 0
+              "
               @confirm="handleDel(scope.row)"
             >
               <template #reference>
-                <el-button type="danger" v-permission:dept-delete>
+                <el-button type="danger" v-permission:article-delete>
                   删除
                 </el-button>
               </template>
@@ -63,55 +71,72 @@
 
     <!-- 新增弹窗开始 -->
     <el-dialog
-      :title="action === 'add' ? '创建部门' : '编辑部门'"
+      :title="action === 'add' ? '创建文章' : '编辑文章'"
       v-model="showDialog"
     >
       <el-form
-        ref="dialogDeptForm"
+        ref="dialogForm"
         size="medium"
         :model="operateForm"
         label-width="1.2rem"
         :rules="rules"
       >
-        <el-form-item label="上级部门" prop="parentId">
-          <el-cascader
-            style="width: 4rem"
-            v-model="operateForm.parentId"
-            placeholder="请选择上级部门"
-            :options="tableData"
-            :props="{ checkStrictly: true, label: 'deptName', value: '_id' }"
-            clearable
-          />
-          <span>不选，则创建一级部门</span>
-        </el-form-item>
-        <el-form-item label="部门名称" prop="deptName">
+        <el-form-item label="文章标题" prop="title">
           <el-input
-            v-model.trim="operateForm.deptName"
-            placeholder="请输入部门名称"
+            v-model.trim="operateForm.title"
+            placeholder="请输入文章标题"
           />
         </el-form-item>
-        <el-form-item label="负责人" prop="user">
-          <el-select
-            v-model="operateForm.user"
-            placeholder="请选择负责人"
-            @change="handleUser"
-          >
-            <el-option
-              :label="item.userName"
-              :value="`${item.userId}/${item.userEmail}/${item.userName}`"
-              v-for="item in userList"
-              :key="item.userId"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="负责人邮箱" prop="userEmail">
+        <el-form-item label="文章描述" prop="desc">
           <el-input
-            placeholder="请输入负责人邮箱"
-            disabled
-            prefix-icon="el-icon-message"
-            v-model.trim="operateForm.userEmail"
+            placeholder="请输入文章描述"
+            v-model.trim="operateForm.desc"
           >
           </el-input>
+        </el-form-item>
+        <el-form-item label="封面图片" prop="coverPic">
+          <el-upload
+            accept="image/jpeg,image/gif,image/png"
+            :before-upload="beforeUpload"
+            action
+            ref="upload"
+            multiple
+            show-file-list
+            :file-list="fileList"
+            list-type="picture-card"
+            :http-request="httpRequest"
+          >
+            <el-button size="small" type="primary">选取文件</el-button>
+            <template #tip>
+              <div class="el-upload__tip">只能上传 jpg/png 文件</div>
+            </template>
+            <template #file="{ file }">
+              <div>
+                <img
+                  class="el-upload-list__item-thumbnail"
+                  :src="file.url"
+                  alt=""
+                />
+                <span class="el-upload-list__item-actions">
+                  <span
+                    class="el-upload-list__item-delete"
+                    @click="onRemove(file)"
+                  >
+                    <i class="el-icon-delete"></i>
+                  </span>
+                </span>
+              </div>
+            </template>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="文章内容" prop="content">
+          <Wangeditor v-model:content="operateForm.content" ref="editor" />
+        </el-form-item>
+        <el-form-item label="文章状态" prop="state">
+          <el-select v-model="operateForm.state" size="small">
+            <el-option :value="1" label="公开"></el-option>
+            <el-option :value="2" label="隐藏"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -127,8 +152,12 @@
 
 <script>
 import utils from "@/utils/utils.js";
+import Wangeditor from "@/components/Wangeditor.vue";
 export default {
   name: "Article",
+  components: {
+    Wangeditor,
+  },
   data() {
     return {
       //查询条件
@@ -138,39 +167,53 @@ export default {
       //新增
       showDialog: false,
       operateForm: {
-        parentId: [null],
+        coverPic: [],
+        state: 1,
+        content: "",
       },
+      fileList: [],
       rules: {
-        // parentId: [
-        //   {
-        //     required: true,
-        //     type: "array",
-        //     message: "请选择上级部门",
-        //     trigger: "change",
-        //   },
-        //   {
-        //     validator: (rule, value, callback) => {
-        //       if (value[0] === undefined) {
-        //         callback(new Error("请选择上级部门"));
-        //       } else {
-        //         callback();
-        //       }
-        //     },
-        //     trigger: "change",
-        //   },
-        // ],
-        deptName: {
+        coverPic: [
+          {
+            required: true,
+            type: "array",
+            message: "请选择上传封面图片",
+            trigger: "change",
+          },
+          {
+            validator: (rule, value, callback) => {
+              if (value[0] === undefined) {
+                callback(new Error("请选择上传封面图片"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "change",
+          },
+        ],
+        content: {
           required: true,
-          message: "请输入部门名称",
-          trigger: "blur",
+          message: "请编写文章内容",
+          trigger: ["blur", "input"],
         },
-        user: {
+        desc: [
+          {
+            required: true,
+            message: "请编写文章描述",
+            trigger: ["blur", "change"],
+          },
+          {
+            min: 15,
+            message: "文章描述不少于15个字符",
+            trigger: ["blur", "change"],
+          },
+        ],
+        title: {
           required: true,
-          message: "请选择负责人",
-          trigger: "change",
+          message: "请编写文章标题",
+          trigger: ["blur", "change"],
         },
       },
-      userList: [],
       //表格
       tableHeaderData: [
         {
@@ -222,18 +265,45 @@ export default {
         },
       ],
       tableData: [],
+      userInfo: this.$store.state.userInfo,
       //新增或修改
       action: "add",
     };
   },
   mounted() {
     this.getTableData();
-    // this.getAllUserList();
   },
   methods: {
-    handleUser(val) {
-      let [userId, userEmail, userName] = val.split("/");
-      Object.assign(this.operateForm, { userId, userEmail, userName });
+    async onRemove(file) {
+      let { msg, data } = await this.$api.removeFile({ file: file.name });
+
+      if (data) {
+        this.$message.success(msg);
+        this.fileList = this.fileList.filter((item) => item.name !== file.name);
+        this.operateForm.coverPic = this.operateForm.coverPic.filter(
+          (item) => item.name !== file.name
+        );
+      } else {
+        this.$message.error(msg);
+      }
+    },
+    beforeUpload(file) {
+      var FileExt = file.name.replace(/.+\./, "");
+      if (!["jpg", "jpge", "png", "gif"].includes(FileExt.toLowerCase())) {
+        this.$message({
+          type: "warning",
+          message: "请上传后缀名为jpg、png、gif的附件！",
+        });
+        return false;
+      }
+    },
+    httpRequest(option) {
+      var formdata = new FormData();
+      formdata.append("file", option.file);
+      this.$api.uploadFile(formdata).then(({ data }) => {
+        this.operateForm.coverPic.push(data);
+        option.onSuccess(); //设置为成功状态
+      });
     },
     async getTableData() {
       let {
@@ -243,17 +313,15 @@ export default {
       });
       this.tableData = list;
     },
-    async getAllUserList() {
-      let { data } = await this.$api.getAllUserList();
-      this.userList = data;
-    },
     //重置
     handleReset(form) {
       this.$refs[form].resetFields();
     },
     handleClose() {
       this.showDialog = false;
-      this.handleReset("dialogDeptForm");
+      this.fileList = []; //清空图片列表
+      this.$refs.upload.clearFiles();
+      this.handleReset("dialogForm");
     },
     //新增弹窗
     handleAdd(row) {
@@ -263,15 +331,20 @@ export default {
     //提交
     handleSubmit() {
       //待优化
-      this.$refs.dialogDeptForm.validate(async (valid) => {
+      this.$refs.dialogForm.validate(async (valid) => {
         if (valid) {
           let { operateForm, action } = this;
           const params = { ...operateForm, action };
-          delete params.user;
-          let { msg } = await this.$api.deptSubmit(params);
+          if (action === "add") {
+            const { userName, userId } = this.userInfo;
+            params.author = { userName, userId };
+          }
+          let { msg } = await this.$api.articleSubmit(params);
           this.showDialog = false;
+          this.$refs.upload.clearFiles();
           this.$message.success(msg);
-          this.handleReset("dialogDeptForm");
+          this.fileList = []; //清空图片列表
+          this.handleReset("dialogForm");
           this.getTableData();
         }
       });
@@ -279,16 +352,22 @@ export default {
     //编辑
     handleEdit(row) {
       this.showDialog = true;
+      this.fileList = []; //清空图片列表
       this.action = "edit";
       this.$nextTick(() => {
-        Object.assign(this.operateForm, row, {
-          user: `${row.userId}/${row.userEmail}/${row.userName}`,
+        Object.assign(this.operateForm, row);
+        this.$refs.editor.editor.txt.html(row.content);
+        row.coverPic.forEach((file) => {
+          this.fileList.push({
+            name: file.name,
+            url: file.path,
+          });
         });
       });
     },
     //删除
     async handleDel({ _id }) {
-      let { msg } = await this.$api.deptDel({ _id });
+      let { msg } = await this.$api.articleDel({ _id });
       this.$message.success(msg);
       this.getTableData();
     },
