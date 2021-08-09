@@ -48,7 +48,7 @@ export default {
       },
       excludeMenus: ["video"],
       showFullScreen: false,
-      uploadImgMaxSize: 10 * 1024 * 1024, // 2M
+      uploadImgMaxSize: 5 * 1024 * 1024, // 5M
       uploadImgAccept: ["jpg", "jpeg", "png", "gif"],
       uploadImgMaxLength: 1,
       customUploadImg: (resultFiles, insertImgFn) => {

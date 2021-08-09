@@ -1,5 +1,5 @@
 <template>
-  <div class="user-mangn">
+  <div class="approve-mangn">
     <div class="query-form">
       <el-form inline :model="queryForm" ref="query_form">
         <el-form-item label="审批状态" prop="auditState">

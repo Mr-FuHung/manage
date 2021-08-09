@@ -1,5 +1,5 @@
 <template>
-  <div class="dept-mangn">
+  <div class="article-mangn">
     <div class="query-form">
       <el-form inline :model="queryForm" ref="form">
         <el-form-item label="文章标题" prop="title">
@@ -108,7 +108,7 @@
           >
             <el-button size="small" type="primary">选取文件</el-button>
             <template #tip>
-              <div class="el-upload__tip">只能上传 jpg/png 文件</div>
+              <div class="el-upload__tip">只能上传 jpg/png 文件,最大5M</div>
             </template>
             <template #file="{ file }">
               <div>
@@ -117,7 +117,14 @@
                   :src="file.url"
                   alt=""
                 />
+
                 <span class="el-upload-list__item-actions">
+                  <span
+                    class="el-upload-list__item-preview"
+                    @click="handlePictureCardPreview(file)"
+                  >
+                    <i class="el-icon-zoom-in"></i>
+                  </span>
                   <span
                     class="el-upload-list__item-delete"
                     @click="onRemove(file)"
@@ -147,6 +154,21 @@
       </template>
     </el-dialog>
     <!-- 新增弹窗结束 -->
+    <!-- 预览图片 -->
+    <el-image
+      style="visibility: hidden; width: 0; height: 0;"
+      :src="previewImgUrl"
+      ref="el_image"
+      :preview-src-list="[previewImgUrl]"
+      :z-index="9999"
+    >
+      <template #error>
+        <div class="image-slot">
+          <i class="el-icon-picture-outline"></i>
+        </div>
+      </template>
+    </el-image>
+    <!-- 预览图片 -->
   </div>
 </template>
 
@@ -164,6 +186,8 @@ export default {
       queryForm: {
         state: "",
       },
+      //预览放大图片
+      previewImgUrl: "",
       //新增
       showDialog: false,
       operateForm: {
@@ -274,6 +298,12 @@ export default {
     this.getTableData();
   },
   methods: {
+    handlePictureCardPreview(file) {
+      this.previewImgUrl = file.url || file;
+      this.$nextTick(() => {
+        this.$refs?.el_image?.clickHandler();
+      });
+    },
     async onRemove(file) {
       let { msg, data } = await this.$api.removeFile({ file: file.name });
 
@@ -339,6 +369,7 @@ export default {
             const { userName, userId } = this.userInfo;
             params.author = { userName, userId };
           }
+          params.coverPic = params.coverPic.map((item) => item.path || item);
           let { msg } = await this.$api.articleSubmit(params);
           this.showDialog = false;
           this.$refs.upload.clearFiles();
@@ -358,10 +389,17 @@ export default {
         Object.assign(this.operateForm, row);
         this.$refs.editor.editor.txt.html(row.content);
         row.coverPic.forEach((file) => {
-          this.fileList.push({
-            name: file.name,
-            url: file.path,
-          });
+          if (Object.prototype.toString.call(file) === "[object String]") {
+            this.fileList.push({
+              name: utils.getFileName(file),
+              url: file,
+            });
+          } else {
+            this.fileList.push({
+              name: file.name,
+              url: file.path,
+            });
+          }
         });
       });
     },
@@ -381,5 +419,10 @@ export default {
 }
 .el-dialog .el-select .el-input {
   width: 130px;
+}
+.article-mangn {
+  .el-image-viewer__wrapper {
+    visibility: visible !important;
+  }
 }
 </style>
