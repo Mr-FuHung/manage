@@ -153,6 +153,22 @@ const api = {
         method: 'delete',
         url: '/article/delete',
         data
+    }),
+    //博客用户列表
+    getBlogUserList: data => $ajax({
+        url: "/blogUsers/list",
+        data,
+    }),
+    //博客用户列表
+    getCommentList: data => $ajax({
+        url: "/comment/list",
+        data,
+    }),
+    //修改留言状态
+    commentOperate: data => $ajax({
+        method:'post',
+        url: "/comment/operate",
+        data,
     })
 }
 export default api;
