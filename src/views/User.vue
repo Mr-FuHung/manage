@@ -85,7 +85,12 @@
     </div>
 
     <!-- 新增弹窗开始 -->
-    <el-dialog title="新增用户" v-model="showDialog">
+    <el-dialog
+      title="新增用户"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      v-model="showDialog"
+    >
       <el-form
         ref="dialogUserForm"
         size="medium"

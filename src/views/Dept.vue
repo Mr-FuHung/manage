@@ -62,6 +62,8 @@
 
     <!-- 新增弹窗开始 -->
     <el-dialog
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
       :title="action === 'add' ? '创建部门' : '编辑部门'"
       v-model="showDialog"
     >

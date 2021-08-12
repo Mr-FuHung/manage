@@ -77,7 +77,12 @@
     </div>
 
     <!-- 新增弹窗开始 -->
-    <el-dialog title="新增菜单" v-model="showDialog">
+    <el-dialog
+      title="新增菜单"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      v-model="showDialog"
+    >
       <el-form
         ref="dialogMenuForm"
         size="medium"

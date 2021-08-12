@@ -71,6 +71,8 @@
 
     <!-- 新增弹窗开始 -->
     <el-dialog
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
       :title="action === 'add' ? '创建文章' : '编辑文章'"
       v-model="showDialog"
     >

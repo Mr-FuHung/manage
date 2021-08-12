@@ -74,7 +74,12 @@
     </div>
 
     <!-- 新增弹窗开始 -->
-    <el-dialog title="申请休假" v-model="showDialog">
+    <el-dialog
+      title="申请休假"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      v-model="showDialog"
+    >
       <el-form
         ref="dialogForm"
         size="medium"
