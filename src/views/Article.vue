@@ -332,11 +332,17 @@ export default {
     httpRequest(option) {
       var formdata = new FormData();
       formdata.append("file", option.file);
-      this.$api.uploadFile(formdata).then(({ data }) => {
-        this.operateForm.coverPic.push(data);
-        this.fileList.push({ name: data.name, url: data.path });
-        option.onSuccess(); //设置为成功状态
-      });
+      this.$api
+        .uploadFile(formdata)
+        .then(({ data }) => {
+          this.operateForm.coverPic.push(data);
+          this.fileList.push({ name: data.name, url: data.path });
+          option.onSuccess(); //设置为成功状态
+        })
+        .catch((err) => {
+          this.$message.error(err)
+          option.onError();
+        });
     },
     async getTableData() {
       let {
