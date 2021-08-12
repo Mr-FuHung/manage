@@ -116,136 +116,156 @@
   </div>
 </template>
 
-<script setup>
+<script >
 import { onMounted, reactive, ref, getCurrentInstance } from "vue";
 import utils from "@/utils/utils.js";
-const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
-//初始化查询选项
-const user = reactive({ state: "" });
-//初始表格头
-const tableHeaderData = reactive([
-  {
-    label: "文章ID",
-    prop: "articleId",
-    width: 180,
-  },
-  {
-    label: "用户ID",
-    prop: "userInfo.userId",
-    width: 180,
-  },
-  {
-    label: "用户名称",
-    prop: "userInfo.userName",
-    width: 180,
-  },
-  {
-    label: "内容",
-    prop: "content",
-    width: 180,
-  },
-  {
-    label: "被回复人ID",
-    prop: "replyId",
-    width: 180,
-  },
-  {
-    label: "被回复人名称",
-    prop: "replyName",
-    width: 180,
-  },
-  {
-    label: "状态",
-    prop: "state",
-    width: 180,
-    formatter(row, column, value) {
-      return {
-        1: "公开",
-        2: "隐藏",
-      }[value];
-    },
-  },
-  {
-    label: "注册时间",
-    prop: "createTime",
-    width: 180,
-    formatter(row, column, value) {
-      return utils.formateDate(new Date(value));
-    },
-  },
-]);
-//初始表格
-const tableData = ref([]);
-//弹窗显示隐藏
-const showDialog = ref(false);
-const detail = ref({
-  userInfo: {},
-});
-//初始化页码
-const pages = reactive({
-  pageSize: 10,
-  pageNum: 1,
-  total: 0,
-});
+export default {
+  name: "Comment",
+  setup() {
+    const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
+    //初始化查询选项
+    const user = reactive({ state: "" });
+    //初始表格头
+    const tableHeaderData = reactive([
+      {
+        label: "文章ID",
+        prop: "articleId",
+        width: 180,
+      },
+      {
+        label: "用户ID",
+        prop: "userInfo.userId",
+        width: 180,
+      },
+      {
+        label: "用户名称",
+        prop: "userInfo.userName",
+        width: 180,
+      },
+      {
+        label: "内容",
+        prop: "content",
+        width: 180,
+      },
+      {
+        label: "被回复人ID",
+        prop: "replyId",
+        width: 180,
+      },
+      {
+        label: "被回复人名称",
+        prop: "replyName",
+        width: 180,
+      },
+      {
+        label: "状态",
+        prop: "state",
+        width: 180,
+        formatter(row, column, value) {
+          return {
+            1: "公开",
+            2: "隐藏",
+          }[value];
+        },
+      },
+      {
+        label: "注册时间",
+        prop: "createTime",
+        width: 180,
+        formatter(row, column, value) {
+          return utils.formateDate(new Date(value));
+        },
+      },
+    ]);
+    //初始表格
+    const tableData = ref([]);
+    //弹窗显示隐藏
+    const showDialog = ref(false);
+    const detail = ref({
+      userInfo: {},
+    });
+    //初始化页码
+    const pages = reactive({
+      pageSize: 10,
+      pageNum: 1,
+      total: 0,
+    });
 
-onMounted(() => {
-  //获取表格数据
-  getComment();
-});
-//获取列表
-const getComment = async function () {
-  const params = Object.assign(user, {
-    pageSize: pages.pageSize,
-    pageNum: pages.pageNum,
-  });
-  const {
-    data: { list, page },
-  } = await ctx.$api.getCommentList(params);
-  //表格数据
-  tableData.value = list;
-  //页码
-  pages.total = page.total;
-};
-//查询
-const handleQuery = () => {
-  getComment();
-};
-//重置
-const handleReset = (form) => {
-  //组件内置方法
-  ctx.$refs[form].resetFields();
-};
-//分页事件
-const handleCurrentChange = (current) => {
-  pages.pageNum = current;
-  getComment();
-};
-//分页大小事件
-const handleSizeChange = (val) => {
-  pages.pageSize = val;
-  getComment();
-};
-//查看
-const handleDetail = (row) => {
-  showDialog.value = true;
-  ctx.$nextTick(() => {
-    Object.assign(detail.value, row);
-    detail.value.state = {
-      1: "公开",
-      2: "隐藏",
-    }[row.state];
-    detail.value.createTime = utils.formateDate(new Date(row.createTime));
-  });
-};
-//公开/隐藏
-const handleOperate = async (row) => {
-  const params = {
-    _id: row._id,
-    state: row.state == 1 ? 2 : 1,
-  };
-  const { msg } = await ctx.$api.commentOperate(params);
-  ctx.$message.success(msg);
-  getComment();
+    onMounted(() => {
+      //获取表格数据
+      getComment();
+    });
+    //获取列表
+    const getComment = async function () {
+      const params = Object.assign(user, {
+        pageSize: pages.pageSize,
+        pageNum: pages.pageNum,
+      });
+      const {
+        data: { list, page },
+      } = await ctx.$api.getCommentList(params);
+      //表格数据
+      tableData.value = list;
+      //页码
+      pages.total = page.total;
+    };
+    //查询
+    const handleQuery = () => {
+      getComment();
+    };
+    //重置
+    const handleReset = (form) => {
+      //组件内置方法
+      ctx.$refs[form].resetFields();
+    };
+    //分页事件
+    const handleCurrentChange = (current) => {
+      pages.pageNum = current;
+      getComment();
+    };
+    //分页大小事件
+    const handleSizeChange = (val) => {
+      pages.pageSize = val;
+      getComment();
+    };
+    //查看
+    const handleDetail = (row) => {
+      showDialog.value = true;
+      ctx.$nextTick(() => {
+        Object.assign(detail.value, row);
+        detail.value.state = {
+          1: "公开",
+          2: "隐藏",
+        }[row.state];
+        detail.value.createTime = utils.formateDate(new Date(row.createTime));
+      });
+    };
+    //公开/隐藏
+    const handleOperate = async (row) => {
+      const params = {
+        _id: row._id,
+        state: row.state == 1 ? 2 : 1,
+      };
+      const { msg } = await ctx.$api.commentOperate(params);
+      ctx.$message.success(msg);
+      getComment();
+    };
+    return {
+      user,
+      tableHeaderData,
+      tableData,
+      showDialog,
+      detail,
+      pages,
+      getComment,
+      handleQuery,
+      handleReset,
+      handleCurrentChange,
+      handleSizeChange,
+      handleDetail,
+      handleOperate
+    };
+  },
 };
 </script>
 

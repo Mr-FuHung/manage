@@ -74,117 +74,138 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { onMounted, reactive, ref, getCurrentInstance } from "vue";
 import utils from "@/utils/utils.js";
 // reactive//用来创建引用类型
 // ref//用来创建基础类型,需用.size配合使用
 //toRaw 响应式对象 转为普通对象
 //getCurrentInstance  初始化一个实例，拿到vue3上下文的配置，ctx
-const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
-//初始化查询选项
-const user = reactive({});
-//初始表格头
-const tableHeaderData = reactive([
-  {
-    label: "用户ID",
-    prop: "userId",
-    width: 180,
-  },
-  {
-    label: "用户名",
-    prop: "userName",
-    width: 180,
-  },
-  {
-    label: "用户邮箱",
-    prop: "email",
-    width: 180,
-  },
-  {
-    label: "ip",
-    prop: "ip",
-    width: 180,
-  },
-  {
-    label: "网站",
-    prop: "webUrl",
-    width: 180,
-  },
-  {
-    label: "注册时间",
-    prop: "createTime",
-    width: 180,
-    formatter(row, column, value) {
-      return utils.formateDate(new Date(value));
-    },
-  },
-  {
-    label: "最后登录时间",
-    prop: "lastLoginTime",
-    width: 180,
-    formatter(row, column, value) {
-      return utils.formateDate(new Date(value));
-    },
-  },
-]);
-//初始表格
-const tableData = ref([]);
-//弹窗显示隐藏
-const showDialog = ref(false);
-const detail = ref({});
-//初始化页码
-const pages = reactive({
-  pageSize: 10,
-  pageNum: 1,
-  total: 0,
-});
+export default {
+  name:'BlogUser',
+  setup() {
+    const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
+    //初始化查询选项
+    const user = reactive({});
+    //初始表格头
+    const tableHeaderData = reactive([
+      {
+        label: "用户ID",
+        prop: "userId",
+        width: 180,
+      },
+      {
+        label: "用户名",
+        prop: "userName",
+        width: 180,
+      },
+      {
+        label: "用户邮箱",
+        prop: "email",
+        width: 180,
+      },
+      {
+        label: "ip",
+        prop: "ip",
+        width: 180,
+      },
+      {
+        label: "网站",
+        prop: "webUrl",
+        width: 180,
+      },
+      {
+        label: "注册时间",
+        prop: "createTime",
+        width: 180,
+        formatter(row, column, value) {
+          return utils.formateDate(new Date(value));
+        },
+      },
+      {
+        label: "最后登录时间",
+        prop: "lastLoginTime",
+        width: 180,
+        formatter(row, column, value) {
+          return utils.formateDate(new Date(value));
+        },
+      },
+    ]);
+    //初始表格
+    const tableData = ref([]);
+    //弹窗显示隐藏
+    const showDialog = ref(false);
+    const detail = ref({});
+    //初始化页码
+    const pages = reactive({
+      pageSize: 10,
+      pageNum: 1,
+      total: 0,
+    });
 
-onMounted(() => {
-  //获取表格数据
-  getUserList();
-});
-//获取列表
-const getUserList = async function () {
-  const params = Object.assign(user, {
-    pageSize: pages.pageSize,
-    pageNum: pages.pageNum,
-  });
-  const {
-    data: { list, page },
-  } = await ctx.$api.getBlogUserList(params);
-  //表格数据
-  tableData.value = list;
-  //页码
-  pages.total = page.total;
-};
-//查询
-const handleQuery = () => {
-  getUserList();
-};
-//重置
-const handleReset = (form) => {
-  //组件内置方法
-  ctx.$refs[form].resetFields();
-};
-//分页事件
-const handleCurrentChange = (current) => {
-  pages.pageNum = current;
-  getUserList();
-};
-//分页大小事件
-const handleSizeChange = (val) => {
-  pages.pageSize = val;
-  getUserList();
-};
-//查看
-const handleDetail = (row) => {
-  showDialog.value = true;
-  ctx.$nextTick(() => {
-    Object.assign(detail.value, row);
-    detail.value.createTime = utils.formateDate(new Date(row.createTime));
-    detail.value.lastLoginTime = utils.formateDate(new Date(row.lastLoginTime));
-  });
+    onMounted(() => {
+      //获取表格数据
+      getUserList();
+    });
+    //获取列表
+    const getUserList = async function () {
+      const params = Object.assign(user, {
+        pageSize: pages.pageSize,
+        pageNum: pages.pageNum,
+      });
+      const {
+        data: { list, page },
+      } = await ctx.$api.getBlogUserList(params);
+      //表格数据
+      tableData.value = list;
+      //页码
+      pages.total = page.total;
+    };
+    //查询
+    const handleQuery = () => {
+      getUserList();
+    };
+    //重置
+    const handleReset = (form) => {
+      //组件内置方法
+      ctx.$refs[form].resetFields();
+    };
+    //分页事件
+    const handleCurrentChange = (current) => {
+      pages.pageNum = current;
+      getUserList();
+    };
+    //分页大小事件
+    const handleSizeChange = (val) => {
+      pages.pageSize = val;
+      getUserList();
+    };
+    //查看
+    const handleDetail = (row) => {
+      showDialog.value = true;
+      ctx.$nextTick(() => {
+        Object.assign(detail.value, row);
+        detail.value.createTime = utils.formateDate(new Date(row.createTime));
+        detail.value.lastLoginTime = utils.formateDate(
+          new Date(row.lastLoginTime)
+        );
+      });
+    };
+    return{
+      user,
+      tableHeaderData,
+      tableData,
+      showDialog,
+      detail,
+      pages,
+      getUserList,
+      handleQuery,
+      handleReset,
+      handleCurrentChange,
+      handleSizeChange,
+      handleDetail
+    }
+  },
 };
 </script>
 

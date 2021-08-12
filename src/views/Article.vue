@@ -156,7 +156,7 @@
     <!-- 新增弹窗结束 -->
     <!-- 预览图片 -->
     <el-image
-      style="visibility: hidden; width: 0; height: 0;"
+      style="visibility: hidden; width: 0; height: 0"
       :src="previewImgUrl"
       ref="el_image"
       :preview-src-list="[previewImgUrl]"
@@ -305,17 +305,17 @@ export default {
       });
     },
     async onRemove(file) {
-      let { msg, data } = await this.$api.removeFile({ file: file.name });
-
-      if (data) {
-        this.$message.success(msg);
-        this.fileList = this.fileList.filter((item) => item.name !== file.name);
-        this.operateForm.coverPic = this.operateForm.coverPic.filter(
-          (item) => item.name !== file.name
-        );
-      } else {
-        this.$message.error(msg);
-      }
+      await this.$api.removeFile({ file: file.name });
+      this.fileList.forEach((item, index, arr) => {
+        if (item.name == file.name) {
+          arr.splice(index, 1);
+        }
+      });
+      this.operateForm.coverPic.forEach((item, index, arr) => {
+        if ((item.name || item) == file.name) {
+          arr.splice(index, 1);
+        }
+      });
     },
     beforeUpload(file) {
       var FileExt = file.name.replace(/.+\./, "");
@@ -332,6 +332,7 @@ export default {
       formdata.append("file", option.file);
       this.$api.uploadFile(formdata).then(({ data }) => {
         this.operateForm.coverPic.push(data);
+        this.fileList.push(data);
         option.onSuccess(); //设置为成功状态
       });
     },
