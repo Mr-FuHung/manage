@@ -314,7 +314,7 @@ export default {
         }
       });
       this.operateForm.coverPic.forEach((item, index, arr) => {
-        if ((item.name || item) == file.name) {
+        if ((item.name || item).indexOf(file.name) != -1) {
           arr.splice(index, 1);
         }
       });
@@ -334,7 +334,7 @@ export default {
       formdata.append("file", option.file);
       this.$api.uploadFile(formdata).then(({ data }) => {
         this.operateForm.coverPic.push(data);
-        this.fileList.push(data);
+        this.fileList.push({ name: data.name, url: data.path });
         option.onSuccess(); //设置为成功状态
       });
     },
@@ -417,6 +417,11 @@ export default {
 </script>
 
 <style lang='scss'>
+.article-mangn {
+  .el-upload-list__item {
+    transition: none !important;
+  }
+}
 .el-form--inline .el-form-item {
   margin-right: 0.3rem;
 }
