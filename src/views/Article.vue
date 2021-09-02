@@ -199,24 +199,24 @@ export default {
       },
       fileList: [],
       rules: {
-        coverPic: [
-          {
-            required: true,
-            type: "array",
-            message: "请选择上传封面图片",
-            trigger: "change",
-          },
-          {
-            validator: (rule, value, callback) => {
-              if (value[0] === undefined) {
-                callback(new Error("请选择上传封面图片"));
-              } else {
-                callback();
-              }
-            },
-            trigger: "change",
-          },
-        ],
+        // coverPic: [
+        //   {
+        //     required: true,
+        //     type: "array",
+        //     message: "请选择上传封面图片",
+        //     trigger: "change",
+        //   },
+        //   {
+        //     validator: (rule, value, callback) => {
+        //       if (value[0] === undefined) {
+        //         callback(new Error("请选择上传封面图片"));
+        //       } else {
+        //         callback();
+        //       }
+        //     },
+        //     trigger: "change",
+        //   },
+        // ],
         content: {
           required: true,
           message: "请编写文章内容",
@@ -229,8 +229,8 @@ export default {
             trigger: ["blur", "change"],
           },
           {
-            min: 15,
-            message: "文章描述不少于15个字符",
+            min: 5,
+            message: "文章描述不少于5个字符",
             trigger: ["blur", "change"],
           },
         ],
