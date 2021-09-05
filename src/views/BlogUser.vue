@@ -1,18 +1,7 @@
 <template>
   <div class="blogUser-mangn">
     <div class="query-form">
-      <el-form inline :model="user" ref="form">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model.trim="user.userId" placeholder="请输入用户ID" />
-        </el-form-item>
-        <el-form-item label="用户名称" prop="userName">
-          <el-input v-model.trim="user.userName" placeholder="请输入用户名称" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset('form')">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <query-form :form="form" v-model="user" @handleQuery="handleQuery" />
     </div>
     <div class="base-table">
       <el-table stripe size="medium" :data="tableData">
@@ -85,8 +74,22 @@ export default {
   name:'BlogUser',
   setup() {
     const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
+     const form=[
+        {
+          type: "input",
+          model: "userId",
+          label: "用户ID",
+          placeholder: "请输入用户ID",
+        },
+        {
+          type: "input",
+          model: "userName",
+          label: "用户名称",
+          placeholder: "请输入用户名称",
+        }
+      ]
     //初始化查询选项
-    const user = reactive({});
+    const user = ref({});
     //初始表格头
     const tableHeaderData = reactive([
       {
@@ -149,7 +152,7 @@ export default {
     });
     //获取列表
     const getUserList = async function () {
-      const params = Object.assign(user, {
+      const params = Object.assign(user.value, {
         pageSize: pages.pageSize,
         pageNum: pages.pageNum,
       });
@@ -192,6 +195,7 @@ export default {
       });
     };
     return{
+      form,
       user,
       tableHeaderData,
       tableData,

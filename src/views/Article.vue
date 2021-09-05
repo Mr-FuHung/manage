@@ -1,25 +1,7 @@
 <template>
   <div class="article-mangn">
     <div class="query-form">
-      <el-form inline :model="queryForm" ref="form">
-        <el-form-item label="文章标题" prop="title">
-          <el-input v-model="queryForm.title" placeholder="请输入文章标题" />
-        </el-form-item>
-        <el-form-item label="作者" prop="userName">
-          <el-input v-model="queryForm.userName" placeholder="请输入作者名称" />
-        </el-form-item>
-        <el-form-item label="文章状态" prop="state">
-          <el-select v-model="queryForm.state" size="small">
-            <el-option value="" label="全部"></el-option>
-            <el-option :value="1" label="公开"></el-option>
-            <el-option :value="2" label="隐藏"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="getTableData">查询</el-button>
-          <el-button @click="handleReset('form')">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <query-form :form="form" v-model="queryForm" @handleQuery="getTableData" />
     </div>
     <div class="base-table">
       <div class="action">
@@ -184,6 +166,40 @@ export default {
   },
   data() {
     return {
+       form: [
+        {
+          type: "input",
+          model: "title",
+          label: "文章标题",
+          placeholder: "请输入文章标题",
+        },
+        {
+          type: "input",
+          model: "userName",
+          label: "作者",
+          placeholder: "请输入作者名称",
+        },
+        {
+          type: "select",
+          model: "state",
+          label: "状态",
+          placeholder: "请选择文章状态",
+          options: [
+            {
+              label: "全部",
+              value: "",
+            },
+            {
+              label: "公开",
+              value: 1,
+            },
+            {
+              label: "隐藏",
+              value: 2,
+            },
+          ],
+        },
+      ],
       //查询条件
       queryForm: {
         state: "",

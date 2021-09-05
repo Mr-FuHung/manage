@@ -1,28 +1,7 @@
 <template>
   <div class="comment-mangn">
     <div class="query-form">
-      <el-form inline :model="user" ref="form">
-        <el-form-item label="文章ID" prop="articleId">
-          <el-input v-model.trim="user.articleId" placeholder="请输入文章ID" />
-        </el-form-item>
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model.trim="user.userId" placeholder="请输入用户ID" />
-        </el-form-item>
-        <el-form-item label="用户名称" prop="userName">
-          <el-input v-model.trim="user.userName" placeholder="请输入用户名称" />
-        </el-form-item>
-        <el-form-item label="留言状态" prop="state">
-          <el-select v-model="user.state" size="small">
-            <el-option value="" label="所有"></el-option>
-            <el-option :value="1" label="公开"></el-option>
-            <el-option :value="2" label="隐藏"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset('form')">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <query-form :form="form" v-model="comment" @handleQuery="handleQuery" />
     </div>
     <div class="base-table">
       <el-table stripe size="medium" :data="tableData">
@@ -123,8 +102,48 @@ export default {
   name: "Comment",
   setup() {
     const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
+    const form=[
+        {
+          type: "input",
+          model: "articleId",
+          label: "文章ID",
+          placeholder: "请输入文章ID",
+        },
+        {
+          type: "input",
+          model: "userId",
+          label: "用户ID",
+          placeholder: "请输入用户ID",
+        },
+        {
+          type: "input",
+          model: "userName",
+          label: "用户名称",
+          placeholder: "请输入用户名称",
+        },
+        {
+          type: "select",
+          model: "state",
+          label: "留言状态",
+          placeholder: "请选择留言状态",
+          options: [
+            {
+              label: "全部",
+              value: "",
+            },
+            {
+              label: "公开",
+              value: 1,
+            },
+            {
+              label: "隐藏",
+              value: 2,
+            },
+          ],
+        },
+      ]
     //初始化查询选项
-    const user = reactive({ state: "" });
+    const comment = ref({ state: "" });
     //初始表格头
     const tableHeaderData = reactive([
       {
@@ -197,7 +216,7 @@ export default {
     });
     //获取列表
     const getComment = async function () {
-      const params = Object.assign(user, {
+      const params = Object.assign(comment.value, {
         pageSize: pages.pageSize,
         pageNum: pages.pageNum,
       });
@@ -251,7 +270,8 @@ export default {
       getComment();
     };
     return {
-      user,
+      form,
+      comment,
       tableHeaderData,
       tableData,
       showDialog,
