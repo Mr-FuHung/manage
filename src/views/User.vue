@@ -174,13 +174,11 @@
 <script>
 import { onMounted, reactive, ref, getCurrentInstance, toRaw } from "vue";
 import utils from "@/utils/utils.js";
-import QueryForm from "../QueryForm/QueryForm.vue";
 // reactive//用来创建引用类型
 // ref//用来创建基础类型,需用.size配合使用
 //toRaw 响应式对象 转为普通对象
 //getCurrentInstance  初始化一个实例，拿到vue3上下文的配置，ctx
 export default {
-  components: { QueryForm },
   name: "User",
   setup() {
     const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
