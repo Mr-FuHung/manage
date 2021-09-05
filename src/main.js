@@ -10,7 +10,7 @@ import 'element-plus/lib/theme-chalk/display.css';//隐藏样式
 // import ajax from '@/utils/ajax';
 import api from '@/api';
 import storage from '@/utils/storage';
-
+import QueryForm from '@/packages/QueryForm';
 
 // import.meta.env //环境变量
 const app = createApp(App);//创建Vue实例
@@ -35,4 +35,4 @@ app.directive('permission', {
 app.config.globalProperties.$api = api;//挂载全局变量
 app.config.globalProperties.$storage = storage;
 
-app.use(router).use(vuex).use(ElementPlus, { size: 'small ', locale }).mount('#app')//加载相关组件并挂载dom
+app.use(router).use(vuex).use(ElementPlus, { size: 'small ', locale }).use(QueryForm).mount('#app')//加载相关组件并挂载dom

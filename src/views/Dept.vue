@@ -1,15 +1,11 @@
 <template>
   <div class="dept-mangn">
     <div class="query-form">
-      <el-form inline :model="queryForm" ref="form">
-        <el-form-item label="部门名称" prop="deptName">
-          <el-input v-model="queryForm.deptName" placeholder="请输入部门名称" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="getTableData">查询</el-button>
-          <el-button @click="handleReset('form')">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <query-form
+        :form="form"
+        v-model="queryForm"
+        @handleQuery="getTableData"
+      />
     </div>
     <div class="base-table">
       <div class="action">
@@ -132,6 +128,14 @@ export default {
   name: "Dept",
   data() {
     return {
+      form: [
+        {
+          type: "input",
+          model: "deptName",
+          label: "部门名称",
+          placeholder: "请输入部门名称",
+        },
+      ],
       //查询条件
       queryForm: {},
       //新增

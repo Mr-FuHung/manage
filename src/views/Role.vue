@@ -1,15 +1,11 @@
 <template>
   <div class="role-mangn">
     <div class="query-form">
-      <el-form inline :model="queryForm" ref="form">
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="queryForm.roleName" placeholder="请输入角色名称" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="getTableData">查询</el-button>
-          <el-button @click="handleReset('form')">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <query-form
+        :form="form"
+        v-model="queryForm"
+        @handleQuery="getTableData"
+      />
     </div>
     <div class="base-table">
       <div class="action">
@@ -145,6 +141,14 @@ export default {
   data() {
     this.action = "add";
     return {
+      form: [
+        {
+          type: "input",
+          model: "roleName",
+          label: "角色名称",
+          placeholder: "请输入角色名称",
+        },
+      ],
       //查询条件
       queryForm: {
         roleName: "",

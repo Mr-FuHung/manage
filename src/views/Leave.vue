@@ -1,22 +1,7 @@
 <template>
   <div class="leave-mangn">
     <div class="query-form">
-      <el-form inline :model="queryForm" ref="query_form">
-        <el-form-item label="审批状态" prop="auditState">
-          <el-select v-model="queryForm.auditState" size="small">
-            <el-option value="" label="全部"></el-option>
-            <el-option :value="1" label="待审批"></el-option>
-            <el-option :value="2" label="审批中"></el-option>
-            <el-option :value="3" label="审批拒绝"></el-option>
-            <el-option :value="4" label="审批通过"></el-option>
-            <el-option :value="5" label="作废"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset('query_form')">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <query-form :form="form" v-model="queryForm" @handleQuery="handleQuery" />
     </div>
     <div class="base-table">
       <div class="action">
@@ -198,9 +183,44 @@ export default {
   setup() {
     const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
     //初始化查询选项
-    const queryForm = reactive({
+    const queryForm = ref({
       auditState: "",
     });
+    const form =  [
+       
+        {
+          type: "select",
+          model: "auditState",
+          label: "审批状态",
+          placeholder: "请选择审批状态",
+          options: [
+            {
+              label: "全部",
+              value: "",
+            },
+            {
+              label: "待审批",
+              value: 1,
+            },
+            {
+              label: "审批中",
+              value: 2,
+            },
+            {
+              label: "审批拒绝",
+              value: 3,
+            },
+            {
+              label: "审批通过",
+              value: 4,
+            },
+            {
+              label: "作废",
+              value: 5,
+            }
+          ],
+        },
+      ];
     //初始表格头
     const tableHeaderData = reactive([
       {
@@ -344,7 +364,7 @@ export default {
     //获取列表
     const getTableList = async function () {
       const params = {
-        ...queryForm,
+        ...queryForm.value,
         pageSize: pages.pageSize,
         pageNum: pages.pageNum,
       };
@@ -429,6 +449,7 @@ export default {
     };
     //导出
     return {
+      form,
       queryForm,
       tableHeaderData,
       tableData,

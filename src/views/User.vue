@@ -1,26 +1,7 @@
 <template>
   <div class="user-mangn">
     <div class="query-form">
-      <el-form inline :model="user" ref="form">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="user.userId" placeholder="请输入用户ID" />
-        </el-form-item>
-        <el-form-item label="用户名称" prop="userName">
-          <el-input v-model="user.userName" placeholder="请输入用户名称" />
-        </el-form-item>
-        <el-form-item label="状态" prop="state">
-          <el-select v-model="user.state" size="small">
-            <el-option :value="0" label="所有"></el-option>
-            <el-option :value="1" label="在职"></el-option>
-            <el-option :value="2" label="离职"></el-option>
-            <el-option :value="3" label="试用期"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset('form')">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <query-form :form="form" v-model="user" @handleQuery="handleQuery" />
     </div>
     <div class="base-table">
       <div class="action">
@@ -193,18 +174,59 @@
 <script>
 import { onMounted, reactive, ref, getCurrentInstance, toRaw } from "vue";
 import utils from "@/utils/utils.js";
+import QueryForm from "../QueryForm/QueryForm.vue";
 // reactive//用来创建引用类型
 // ref//用来创建基础类型,需用.size配合使用
 //toRaw 响应式对象 转为普通对象
 //getCurrentInstance  初始化一个实例，拿到vue3上下文的配置，ctx
 export default {
+  components: { QueryForm },
   name: "User",
   setup() {
     const { ctx } = getCurrentInstance(); //初始化一个实例，拿到vue3上下文的配置，ctx===this
     //初始化查询选项
-    const user = reactive({
+    const user = ref({
       state: 0,
     });
+    //定义表单
+    const form = [
+      {
+        type: "input",
+        model: "userId",
+        label: "用户ID",
+        placeholder: "请输入用户ID",
+      },
+      {
+        type: "input",
+        model: "userName",
+        label: "用户名称",
+        placeholder: "请输入用户名称",
+      },
+      {
+        type: "select",
+        model: "state",
+        label: "状态",
+        placeholder: "请选择状态",
+        options: [
+          {
+            label: "所有",
+            value: 0,
+          },
+          {
+            label: "在职",
+            value: 1,
+          },
+          {
+            label: "离职",
+            value: 2,
+          },
+          {
+            label: "试用期",
+            value: 3,
+          },
+        ],
+      },
+    ];
     //初始表格头
     const tableHeaderData = reactive([
       {
@@ -331,7 +353,7 @@ export default {
     });
     //获取列表
     const getUserList = async function () {
-      const params = Object.assign(user, {
+      const params = Object.assign(user.value, {
         pageSize: pages.pageSize,
         pageNum: pages.pageNum,
       });
@@ -448,6 +470,7 @@ export default {
     };
     //导出
     return {
+      form,
       user,
       tableHeaderData,
       tableData,

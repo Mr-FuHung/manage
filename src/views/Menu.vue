@@ -1,26 +1,7 @@
 <template>
   <div class="menu-mangn">
     <div class="query-form">
-      <el-form inline :model="queryForm" ref="form">
-        <el-form-item label="菜单名称" prop="menuName">
-          <el-input v-model="queryForm.menuName" placeholder="请输入菜单名称" />
-        </el-form-item>
-        <el-form-item label="菜单状态" prop="menuState">
-          <el-select
-            v-model="queryForm.menuState"
-            size="small"
-            placeholder="请选择菜单状态"
-          >
-            <el-option value="" label="全部"></el-option>
-            <el-option :value="1" label="正常"></el-option>
-            <el-option :value="2" label="停用"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="getTableData">查询</el-button>
-          <el-button @click="handleReset('form')">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <query-form :form="form" v-model="queryForm" @handleQuery="getTableData" />
     </div>
     <div class="base-table">
       <div class="action">
@@ -176,6 +157,34 @@ export default {
   name: "Menu",
   data() {
     return {
+      form: [
+        {
+          type: "input",
+          model: "menuName",
+          label: "菜单名称",
+          placeholder: "请输入菜单名称",
+        },
+        {
+          type: "select",
+          model: "menuState",
+          label: "状态",
+          placeholder: "请选择菜单状态",
+          options: [
+            {
+              label: "全部",
+              value: "",
+            },
+            {
+              label: "正常",
+              value: 1,
+            },
+            {
+              label: "停用",
+              value: 2,
+            },
+          ],
+        },
+      ],
       //查询条件
       queryForm: {
         menuState: "",
