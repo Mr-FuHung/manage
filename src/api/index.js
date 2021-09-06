@@ -166,9 +166,24 @@ const api = {
     }),
     //修改留言状态
     commentOperate: data => $ajax({
-        method:'post',
+        method: 'post',
         url: "/comment/operate",
         data,
-    })
+    }),
+    //文章分类列表
+    getArticleClassifyList: data => $ajax({
+        url: "/articleClassify/list",
+        data
+    }),
+    //文章分类新增编辑
+    articleClassifySubmit: data => $ajax({
+        method: 'post',
+        url: "/articleClassify/operate",
+        data
+    }),
+    //文章分类全量
+    getClassifyAll: () => $ajax({
+        url: "/articleClassify/all/list"
+    }),
 }
 export default api;

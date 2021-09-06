@@ -116,6 +116,14 @@ const routes = [
                     title: '博客用户管理'
                 },
                 component: () => import('@/views/BlogUser.vue'),
+            },
+            {
+                name: 'articleclassify',
+                path: '/blog/ArticleClassify',
+                meta: {
+                    title: '文章分类管理'
+                },
+                component: () => import('@/views/ArticleClassify.vue'),
             }
         ]
     },

@@ -1,7 +1,11 @@
 <template>
   <div class="article-mangn">
     <div class="query-form">
-      <query-form :form="form" v-model="queryForm" @handleQuery="getTableData" />
+      <query-form
+        :form="form"
+        v-model="queryForm"
+        @handleQuery="getTableData"
+      />
     </div>
     <div class="base-table">
       <div class="action">
@@ -49,6 +53,17 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        class="pagination"
+        background
+        layout="prev, pager, next, sizes"
+        :page-sizes="[10, 20, 50, 100]"
+        :total="pages.total"
+        :page-size="pages.pageSize"
+        :current-page="pages.pageNum"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
     </div>
 
     <!-- 新增弹窗开始 -->
@@ -70,6 +85,16 @@
             v-model.trim="operateForm.title"
             placeholder="请输入文章标题"
           />
+        </el-form-item>
+        <el-form-item label="文章分类" prop="articleClass">
+          <el-select v-model="operateForm.articleClass" size="small">
+            <el-option
+              :value="item.articleClassId"
+              :label="item.articleClassName"
+              v-for="(item, ind) in classifyAll"
+              :key="ind"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="文章描述" prop="desc">
           <el-input
@@ -166,7 +191,7 @@ export default {
   },
   data() {
     return {
-       form: [
+      form: [
         {
           type: "input",
           model: "title",
@@ -199,10 +224,23 @@ export default {
             },
           ],
         },
+        {
+          type: "select",
+          model: "articleClass",
+          label: "文章分类",
+          placeholder: "请选择文章分类",
+          options: [
+            {
+              label: "全部",
+              value: "",
+            },
+          ],
+        },
       ],
       //查询条件
       queryForm: {
         state: "",
+        articleClass: "",
       },
       //预览放大图片
       previewImgUrl: "",
@@ -237,6 +275,11 @@ export default {
           required: true,
           message: "请编写文章内容",
           trigger: ["blur", "input"],
+        },
+        articleClass: {
+          required: true,
+          message: "请选择文章分类",
+          trigger: ["blur", "change"],
         },
         desc: [
           {
@@ -279,6 +322,20 @@ export default {
           // width: 180,
         },
         {
+          label: "文章分类",
+          prop: "articleClass",
+          // width: 180,
+          formatter: (row, column, value) => {
+            let val = this.classifyAll.filter(
+              (item) => item.articleClassId == value
+            )[0];
+            if (val) {
+              return val.articleClassName;
+            }
+            return "-";
+          },
+        },
+        {
           label: "文章状态",
           prop: "state",
           // width: 180,
@@ -310,12 +367,42 @@ export default {
       userInfo: this.$store.state.userInfo,
       //新增或修改
       action: "add",
+      pages: {
+        total: 0,
+        pageSize: 10,
+        pageNum: 1,
+      },
+      classifyAll: [], //文章分类
     };
   },
   mounted() {
     this.getTableData();
+    this.getClassifyAll();
   },
   methods: {
+    async getClassifyAll() {
+      let { data } = await this.$api.getClassifyAll();
+      this.classifyAll = data;
+      this.form.some((item) => {
+        if (item.model === "articleClass") {
+          data.forEach((options) => {
+            item.options.push({
+              label: options.articleClassName,
+              value: options.articleClassId,
+            });
+          });
+          return true;
+        }
+      });
+    },
+    handleSizeChange(val) {
+      this.pages.pageSize = val;
+      this.getTableData();
+    },
+    handleCurrentChange(current) {
+      this.pages.pageNum = current;
+      this.getTableData();
+    },
     handlePictureCardPreview(file) {
       this.previewImgUrl = file.url || file;
       this.$nextTick(() => {
@@ -356,17 +443,19 @@ export default {
           option.onSuccess(); //设置为成功状态
         })
         .catch((err) => {
-          this.$message.error(err)
+          this.$message.error(err);
           option.onError();
         });
     },
     async getTableData() {
       let {
-        data: { list },
+        data: { list, page },
       } = await this.$api.getArticleList({
         ...this.queryForm,
+        ...this.pages,
       });
       this.tableData = list;
+      this.pages.total = page.total;
     },
     //重置
     handleReset(form) {
