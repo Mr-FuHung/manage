@@ -9,7 +9,7 @@ export default defineConfig({
     open: true,//自动打开
     proxy: {//代理
       "/v1": {
-        target: 'http://localhost:3000'
+        target: 'http://baron.ink'
       }
     }
   },
